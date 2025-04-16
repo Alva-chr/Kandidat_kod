@@ -7,7 +7,7 @@
 u = [v_x, v_y, sigma_xx, sigma_xy, sigma_yy];
 
 m_x = 51;
-my = 51;
+m_y = 51;
 
 W_x = 10;
 W_y = 20;
@@ -16,29 +16,46 @@ W_y = 20;
 hx = W_x/(m_x-1);
 hy = W_y/(m_y-1);
 
+d1_upwind_2;
+
 %Material 'constants', will vary by function
 lambda = 1;  %First lamé parameter
 mu = 1;      %Second lamé parameter
 rho = 1;     %Density
 
+LA = lambdaDiagonal(lambda,m_x,m_y);
+MU = lambdaDiagonal(mu,m_x,m_y);
+RH = lambdaDiagonal(rho,m_x,m_y);
+
+Id = speye(m_x*m_y);
+
+Ze = sparse(m_x,m_y);
+
 %Defining matrixes for equation 11 in report
-C = [rho, 0,   0, 0, 0;
-     0,   rho, 0, 0, 0;
-     0,   0,   1, 0, 0;
-     0,   0,   0, 1, 0;
-     0,   0,   0, 0, 1];
+C = [RH, Ze,   Ze, Ze, Ze;
+     Ze,   RH, Ze, Ze, Ze;
+     Ze,   Ze,   Id, Ze, Ze;
+     Ze,   Ze,   Ze, Id, Ze;
+     Ze,   Ze,   Ze, Ze, Id];
 
-A = [0,           0, 1, 0, 0;
-     0,           0, 0, 1, 0;
-     lambda+2*mu, 0, 0, 0, 0;
-     0,           mu, 0, 0, 0;
-     lambda,      0, 0, 0, 0];
+A = [Ze,           Ze, Id, Ze, Ze;
+     Ze,           Ze, Ze, Id, Ze;
+     LA+2*MU, Ze, Ze, Ze, Ze;
+     Ze,           MU, Ze, Ze, Ze;
+     LA,      Ze, Ze, Ze, Ze];
 
-B = [0, 0,          0, 1, 0;
-     0, 0,          0, 0, 1;
-     0, lambda,     0, 0, 0;
-     mu, 0,         0, 0, 0;
-     0, lambda+2*mu, 0, 0, 0];
+B = [Ze, Ze,          Ze, Id, Ze;
+     Ze, Ze,          Ze, Ze, Id;
+     Ze, LA,     Ze, Ze, Ze;
+     MU, Ze,         Ze, Ze, Ze;
+     Ze, LA+2*MU, Ze, Ze, Ze];
+
+D = [Dp, Ze, Ze, Ze, Ze;
+     Ze, Dp, Ze, Ze, Ze;
+     Ze, Ze, Dm, Ze, Ze;
+     Ze, Ze, Ze, Dm, Ze;
+     Ze, Ze, Ze, Ze, Dm];
+
 
 %Characteristic Boundary operator 
 %NEEDS TO BE CORRECTLY DEFINED
@@ -54,8 +71,8 @@ P_y = I - HII * L_y' * inv(L_y * HII * L_y') * L_y; %#ok<MINV>
 
 P = P_x*P_y;
 
-D_x = []; %NEEDS TO BE DEFINED
-D_y = []; %NEEDS TO BE DEFINED
+D_x = A*D; %NEEDS TO BE DEFINED
+D_y = B*D; %NEEDS TO BE DEFINED
 
 
 M = C\(D_x+D_y);
