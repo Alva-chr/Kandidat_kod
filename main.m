@@ -26,8 +26,8 @@ x = 0 : hx : W_x;
 y = 0 : hy : W_y;
 [X, Y] = ndgrid(x, y);
 
-
-d1_upwind_2;
+[H_x, HI_x, Dp_x, Dm_x, e1_x, em_x] = d1_upwind_2(m_x, hx);
+[H_y, HI_y, Dp_y, Dm_y, e1_y, em_y] = d1_upwind_2(m_y, hy);
 
 %Material 'constants', will vary by function
 lambda = 1;  %First lamé parameter
