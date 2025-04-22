@@ -4,6 +4,12 @@
 % L: Lenght of room
 % H: Height of room
 
+e1 = [1,0,0,0,0];
+e2 = [0,1,0,0,0];
+e3 = [0,0,1,0,0];
+e4 = [0,0,0,1,0];
+e5 = [0,0,0,0,1];
+
 u = [v_x, v_y, sigma_xx, sigma_xy, sigma_yy];
 
 m_x = 51;
@@ -57,7 +63,8 @@ D = [Dp, Ze, Ze, Ze, Ze;
      Ze, Ze, Ze, Ze, Dm];
 
 
-%Characteristic Boundary operator 
+%Characteristic Boundary operator
+L_w = kron(e1,)
 %NEEDS TO BE CORRECTLY DEFINED
 L_x = [L_w; L_e];
 L_y = [L_s; L_n];
