@@ -22,6 +22,11 @@ W_y = 20;
 hx = W_x/(m_x-1);
 hy = W_y/(m_y-1);
 
+x = 0 : hx : W_x;
+y = 0 : hy : W_y;
+[X, Y] = ndgrid(x, y);
+
+
 d1_upwind_2;
 
 %Material 'constants', will vary by function
@@ -64,7 +69,7 @@ D = [Dp, Ze, Ze, Ze, Ze;
 
 
 %Characteristic Boundary operator
-L_w = kron(e1,)
+%L_w = kron(e1,);
 %NEEDS TO BE CORRECTLY DEFINED
 L_x = [L_w; L_e];
 L_y = [L_s; L_n];
@@ -103,5 +108,46 @@ ax.FontSize = 10;
 
 
 
+%Animation for magintude if velocity
+% Kvar att göra:
+% - Anpassa kod för våprt fall
+% - IC
+% - Randvillkor
+% - Hitta dt enligt cfl
+function plotfun(u,t,plt,txt)
+    plt.ZData = u;
+    txt.String = "$u(x,y,t ="+ t + ")$";
+    drawnow;
+end
 
+fig_an = figure(Color='w', Position=[2360 90 1271 847]);
+wave_plot = surf(X,Y,u, EdgeAlpha=0.2); 
+hold on;
+axis([0,0.5*W_x,0,0.5*W_y, -0.5,1])
+textoptions = {'Interpeter', 'latex', 'FontSize', 20};
+xlabel("$x$",textoptions{:})
+ylabel("$y$",textoptions{:})
+zlabel("$v$",textoptions{:});
 
+ttle = title("$u(x,y,t ="+ 0 + ")$", textoptions{:});
+ax = gca; ax.TickLabelInterpreter = "latex"; ax.Fontsize = 20;
+
+plthndle = @(u,t) plotfun(u,t,waveplot,ttle);
+
+vidObj = VideoWriter("test1", "MPEG-4");
+set(vidObj, "FrameRate", 30)
+open(vidObj);
+image = getframe(gcf);
+writeVideo(vidObj, image);
+
+%Run simulation for animation
+ t = 0; T = 2;
+ while (t < T)
+    [u,v] = RK4(u, dt, B);
+    t = t + dt;
+    plthndle(u,t);
+    image = getframe(gcf);
+    writeVideo(vidObj, image);
+ end
+
+ close(vidObj)
