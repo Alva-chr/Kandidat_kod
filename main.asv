@@ -26,8 +26,8 @@ x = 0 : hx : W_x;
 y = 0 : hy : W_y;
 [X, Y] = ndgrid(x, y);
 
-
-d1_upwind_2;
+[H_x, HI_x, Dp_x, Dm_x, e1_x, em_x] = d1_upwind_2(m_x, hx);
+[H_y, HI_y, Dp_y, Dm_y, e1_y, em_y] = d1_upwind_2(m_y, hy);
 
 %Material 'constants', will vary by function
 lambda = 1;  %First lamé parameter
@@ -67,10 +67,9 @@ D = [Dp, Ze, Ze, Ze, Ze;
      Ze, Ze, Ze, Dm, Ze;
      Ze, Ze, Ze, Ze, Dm];
 
-
 %Characteristic Boundary operator
-%L_w = kron(e1,);
-%NEEDS TO BE CORRECTLY DEFINED
+BC_fun;
+
 L_x = [L_w; L_e];
 L_y = [L_s; L_n];
 
@@ -112,13 +111,15 @@ ax.FontSize = 10;
 % Kvar att göra:
 % - Anpassa kod för vårt fall
 % - IC
-% - Randvillkor
+% - Randvillkor, fixat
 % - Hitta dt enligt cfl
 function plotfun(u,t,plt,txt)
     plt.ZData = u;
     txt.String = "$u(x,y,t ="+ t + ")$";
     drawnow;
 end
+
+%INSERT IC
 
 fig_an = figure(Color='w', Position=[2360 90 1271 847]);
 wave_plot = surf(X,Y,u, EdgeAlpha=0.2); 

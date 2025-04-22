@@ -67,10 +67,9 @@ D = [Dp, Ze, Ze, Ze, Ze;
      Ze, Ze, Ze, Dm, Ze;
      Ze, Ze, Ze, Ze, Dm];
 
-
 %Characteristic Boundary operator
-%L_w = kron(e1,);
-%NEEDS TO BE CORRECTLY DEFINED
+BC_fun;
+
 L_x = [L_w; L_e];
 L_y = [L_s; L_n];
 
@@ -112,13 +111,17 @@ ax.FontSize = 10;
 % Kvar att göra:
 % - Anpassa kod för vårt fall
 % - IC
-% - Randvillkor
+% - Randvillkor, fixat
 % - Hitta dt enligt cfl
 function plotfun(u,t,plt,txt)
     plt.ZData = u;
     txt.String = "$u(x,y,t ="+ t + ")$";
     drawnow;
 end
+
+%INSERT IC
+
+plx = sqrt((e1*u)^2 +(e2*u)^2);
 
 fig_an = figure(Color='w', Position=[2360 90 1271 847]);
 wave_plot = surf(X,Y,u, EdgeAlpha=0.2); 

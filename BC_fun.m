@@ -1,4 +1,4 @@
-function [L_w, L_e, L_s, L_n] = boundary(e3, e4, e5, m_x, m_y, e1_x, em_x, e1_y, em_y)
+function [L_w, L_e, L_s, L_n] = BC_fun(e3, e4, e5, m_x, m_y, e1_x, em_x, e1_y, em_y)
 
 KxW = kron(e1_x', speye(m_y));  
 KxE = kron(em_x', speye(m_y));  
