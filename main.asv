@@ -4,8 +4,8 @@
 % L: Lenght of room
 % H: Height of room
 
-m_x = 5;
-m_y = 3;
+m_x = 7;
+m_y = 4;
 
 W_x = 20;
 W_y = 10;
@@ -84,7 +84,7 @@ C = [RH, Ze,   Ze, Ze, Ze;
      Ze,   Ze,   Ze, Id, Ze;
      Ze,   Ze,   Ze, Ze, Id];
 
-A = [Ze,           Ze, Id, Ze, Ze;
+A = [Ze,           Ze, Id*D, Ze, Ze;
      Ze,           Ze, Ze, Id, Ze;
      LA+2*MU, Ze, Ze, Ze, Ze;
      Ze,           MU, Ze, Ze, Ze;
@@ -181,7 +181,10 @@ while t < T
     count = count +1;
 
     if mod(count,10) == 0
-        set()
+        set(hSurf, 'ZData', e1*u);
+        drawnow;
+    end
+
 end
 
 

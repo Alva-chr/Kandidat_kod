@@ -84,17 +84,17 @@ C = [RH, Ze,   Ze, Ze, Ze;
      Ze,   Ze,   Ze, Id, Ze;
      Ze,   Ze,   Ze, Ze, Id];
 
-A = [Ze,           Ze, Id, Ze, Ze;
-     Ze,           Ze, Ze, Id, Ze;
-     LA+2*MU, Ze, Ze, Ze, Ze;
-     Ze,           MU, Ze, Ze, Ze;
-     LA,      Ze, Ze, Ze, Ze];
+A = [Ze,           Ze, Id*Dp_x, Ze, Ze;
+     Ze,           Ze, Ze, Id*Dp_x, Ze;
+     (LA+2*MU)*Dm_x, Ze, Ze, Ze, Ze;
+     Ze,           MU*Dm_x, Ze, Ze, Ze;
+     LA*Dm_x,      Ze, Ze, Ze, Ze];
 
-B = [Ze, Ze,          Ze, Id, Ze;
-     Ze, Ze,          Ze, Ze, Id;
-     Ze, LA,     Ze, Ze, Ze;
-     MU, Ze,         Ze, Ze, Ze;
-     Ze, LA+2*MU, Ze, Ze, Ze];
+B = [Ze, Ze,          Ze, Id*Dp_y, Ze;
+     Ze, Ze,          Ze, Ze, Id*Dp_y;
+     Ze, LA*Dm_y,     Ze, Ze, Ze;
+     MU*Dm_y, Ze,         Ze, Ze, Ze;
+     Ze, (LA+2*MU)*Dm_y, Ze, Ze, Ze];
 
 D = [Dp, Ze, Ze, Ze, Ze;
      Ze, Dp, Ze, Ze, Ze;
@@ -117,8 +117,8 @@ P_y = I - HII * L_y' * inv(L_y * HII * L_y') * L_y; %#ok<MINV>
 
 P = P_x*P_y;
 
-D_x = A*D; 
-D_y = B*D; 
+D_x = A; 
+D_y = B; 
 
 
 M = C\(D_x+D_y);
