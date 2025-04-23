@@ -15,12 +15,12 @@ Id = speye(m_x*m_y);
 Ze = sparse(m_x,m_y);
 
 e1 = [Id,Ze,Ze,Ze,Ze];
-e2 = [0,1,0,0,0];
-e3 = [0,0,1,0,0];
-e4 = [0,0,0,1,0];
-e5 = [0,0,0,0,1];
+e2 = [Ze,Id,Ze,Ze,Ze];
+e3 = [Ze,Ze,Id,Ze,Ze];
+e4 = [Ze,Ze,Ze,Id,Ze];
+e5 = [Ze,Ze,Ze,Ze,Id];
 
-u = [v_x, v_y, sigma_xx, sigma_xy, sigma_yy];
+%u = [v_x, v_y, sigma_xx, sigma_xy, sigma_yy];
 
 
 
