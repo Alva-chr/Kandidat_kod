@@ -4,15 +4,28 @@
 % L: Lenght of room
 % H: Height of room
 
-m_x = 51;
-m_y = 51;
+m_x = 7;
+m_y = 4;
 
-W_x = 10;
-W_y = 20;
+W_x = 20;
+W_y = 10;
+
+%gridspacing for height and length
+hx = W_x/(m_x-1);
+hy = W_y/(m_y-1);
+
+x0 = 10;
+y0 = 5;
+
+sig = 1;
 
 Id = speye(m_x*m_y);
 
-Ze = sparse(m_x,m_y);
+Ze = sparse(m_x*m_y,m_x*m_y);
+
+Id0 = 1+sparse(m_x*m_y,1);
+
+Ze0 = sparse(m_x*m_y,1);
 
 e1 = [Id,Ze,Ze,Ze,Ze];
 e2 = [Ze,Id,Ze,Ze,Ze];
@@ -20,17 +33,36 @@ e3 = [Ze,Ze,Id,Ze,Ze];
 e4 = [Ze,Ze,Ze,Id,Ze];
 e5 = [Ze,Ze,Ze,Ze,Id];
 
-%u = [v_x, v_y, sigma_xx, sigma_xy, sigma_yy];
-
-
-
-%gridspacing for height and length
-hx = W_x/(m_x-1);
-hy = W_y/(m_y-1);
+e01 = [Id0,Ze0,Ze0,Ze0,Ze0];
+e02 = [Ze0,Id0,Ze0,Ze0,Ze0];
+e03 = [Ze0,Ze0,Id0,Ze0,Ze0];
+e04 = [Ze0,Ze0,Ze0,Id0,Ze0];
+e05 = [Ze0,Ze0,Ze0,Ze0,Id0];
 
 x = 0 : hx : W_x;
 y = 0 : hy : W_y;
+
+
+
 [X, Y] = ndgrid(x, y);
+
+Z = exp(-0.7*((X-x0).^2+(Y-y0).^2));
+v_x0 = sparse(Z(:));
+v_y0 = sparse(Z(:));
+
+sigma_xx0 = sparse(m_x*m_y,1);
+sigma_xy0 = sparse(m_x*m_y,1);
+sigma_yy0 = sparse(m_x*m_y,1);
+
+whos sigma_xx0
+
+u = e1'*v_x0+e2'*v_y0+e3'*sigma_xx0+e4'*sigma_xy0+e5'*sigma_yy0;
+
+TEST = e01'*v_x0;
+
+whos 
+
+
 
 [H_x, HI_x, Dp_x, Dm_x, e1_x, em_x] = d1_upwind_2(m_x, hx);
 [H_y, HI_y, Dp_y, Dm_y, e1_y, em_y] = d1_upwind_2(m_y, hy);
@@ -93,7 +125,7 @@ M = C\(D_x+D_y);
 
 B = P*M*P;
 
-u_t = B*U;
+%u_t = B*U;
 
 %RK4
 
@@ -130,9 +162,30 @@ ax.FontSize = 10;
 
 %Simulation stuff
 t = 0; T = 2;
+dt = 0.1; %ändra efter CFL
+count = 0;
 
-%ny vx och vy för varje steg.
-%Beräkna magnituden för varje punkt
+%IC plot
+figure;
+hSurf = surf(X,Y,e1*u);
+shading interp;
+colormap jet;
+colorbar;
+axis tight;
+xlabel('x'); ylabel('y'); zlabel('x-hastig')
+
+while t < T
+    RK4;
+    t = dt + t;
+    
+    count = count +1;
+
+    if mod(count,10) == 0
+        set(hSurf, 'ZData', e1*u);
+        drawnow;
+    end
+
+end
 
 
 
