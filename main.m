@@ -4,19 +4,25 @@
 % L: Lenght of room
 % H: Height of room
 
-e1 = [1,0,0,0,0];
-e2 = [0,1,0,0,0];
-e3 = [0,0,1,0,0];
-e4 = [0,0,0,1,0];
-e5 = [0,0,0,0,1];
-
-u = [v_x, v_y, sigma_xx, sigma_xy, sigma_yy];
-
 m_x = 51;
 m_y = 51;
 
 W_x = 10;
 W_y = 20;
+
+Id = speye(m_x*m_y);
+
+Ze = sparse(m_x,m_y);
+
+e1 = [Id,Ze,Ze,Ze,Ze];
+e2 = [Ze,Id,Ze,Ze,Ze];
+e3 = [Ze,Ze,Id,Ze,Ze];
+e4 = [Ze,Ze,Ze,Id,Ze];
+e5 = [Ze,Ze,Ze,Ze,Id];
+
+%u = [v_x, v_y, sigma_xx, sigma_xy, sigma_yy];
+
+
 
 %gridspacing for height and length
 hx = W_x/(m_x-1);
@@ -38,9 +44,6 @@ LA = lambdaDiagonal(lambda,m_x,m_y);
 MU = lambdaDiagonal(mu,m_x,m_y);
 RH = lambdaDiagonal(rho,m_x,m_y);
 
-Id = speye(m_x*m_y);
-
-Ze = sparse(m_x,m_y);
 
 %Defining matrixes for equation 11 in report
 C = [RH, Ze,   Ze, Ze, Ze;
@@ -90,6 +93,10 @@ M = C\(D_x+D_y);
 
 B = P*M*P;
 
+u_t = B*U;
+
+%RK4
+
 %Kör med små m
 %GÖR ALLT SPARSE FORMAT
 %No positive real-parts for stability
@@ -115,13 +122,17 @@ ax.FontSize = 10;
 % - Hitta dt enligt cfl
 % - Skriva kod för simulation
 
-function plotfun(u,t,plt,txt)
-    plt.ZData = u;
-    txt.String = "$u(x,y,t ="+ t + ")$";
-    drawnow;
-end
+
 
 %INSERT IC
+
+
+
+%Simulation stuff
+t = 0; T = 2;
+
+%ny vx och vy för varje steg.
+%Beräkna magnituden för varje punkt
 
 
 
