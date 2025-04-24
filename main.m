@@ -64,8 +64,8 @@ whos
 
 
 
-[H_x, HI_x, Dp_x, Dm_x, e1_x, em_x] = d1_upwind_2(m_x, hx);
-[H_y, HI_y, Dp_y, Dm_y, e1_y, em_y] = d1_upwind_2(m_y, hy);
+[H_x, HI_x, Dp_x, Dm_x, e1_x, em_x] = d1_upwind_2(m_x*m_y, hx);
+[H_y, HI_y, Dp_y, Dm_y, e1_y, em_y] = d1_upwind_2(m_y*m_x, hy);
 
 %Material 'constants', will vary by function
 lambda = 1;  %First lamé parameter
@@ -96,11 +96,6 @@ B = [Ze, Ze,          Ze, Id*Dp_y, Ze;
      MU*Dm_y, Ze,         Ze, Ze, Ze;
      Ze, (LA+2*MU)*Dm_y, Ze, Ze, Ze];
 
-D = [Dp, Ze, Ze, Ze, Ze;
-     Ze, Dp, Ze, Ze, Ze;
-     Ze, Ze, Dm, Ze, Ze;
-     Ze, Ze, Ze, Dm, Ze;
-     Ze, Ze, Ze, Ze, Dm];
 
 %Characteristic Boundary operator
 BC_fun;
@@ -161,7 +156,7 @@ ax.FontSize = 10;
 
 
 %Simulation stuff
-t = 0; T = 2;
+t = 0; T = 0.5;
 dt = 0.1; %ändra efter CFL
 count = 0;
 
