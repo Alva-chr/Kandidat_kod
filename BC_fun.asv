@@ -10,13 +10,13 @@ NxE = kron(em_x', Im_y);
 NyS = kron(Im_x, e1_y');   
 NyN = kron(Im_x, em_y');  
 
-L_w = [ e3*NxW;
-        e4*NxW) ];
-L_e = [ e3*NxE;
-        e4*NxE ];
+L_w = [ kron(e3 NxW;
+        kron(e4, NxW) ];
+L_e = [ kron(e3, NxE);
+        kron(e4, NxE) ];
 
-L_s = [ e4*NyS;
-        e5*NyS ];
-L_n = [ e4*NyN;
-        e5*NyN ];
+L_s = [ kron(e4, NyS);
+        kron(e5, NyS) ];
+L_n = [ kron(e4, NyN);
+        kron(e5, NyN) ];
 end
