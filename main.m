@@ -98,19 +98,19 @@ B = [Ze, Ze,          Ze, Id*Dp_y, Ze;
 
 
 %Characteristic Boundary operator
-BC_fun;
+%BC_fun;
 
-L_x = [L_w; L_e];
-L_y = [L_s; L_n];
+%L_x = [L_w; L_e];
+%L_y = [L_s; L_n];
 
 %Discrete innerproduct
-HII = inv(kron(H,H)*C);
+%HII = inv(kron(H,H)*C);
 
 %Defining projectionoperator, one for each direction is needed
-P_x = I - HII * L_x' * inv(L_x * HII * L_x') * L_x; %#ok<MINV> 
-P_y = I - HII * L_y' * inv(L_y * HII * L_y') * L_y; %#ok<MINV> 
+%P_x = I - HII * L_x' * inv(L_x * HII * L_x') * L_x; %#ok<MINV> 
+%P_y = I - HII * L_y' * inv(L_y * HII * L_y') * L_y; %#ok<MINV> 
 
-P = P_x*P_y;
+%P = P_x*P_y;
 
 D_x = A; 
 D_y = B; 
@@ -118,7 +118,7 @@ D_y = B;
 
 M = C\(D_x+D_y);
 
-B = P*M*P;
+%B = P*M*P;
 
 %u_t = B*U;
 
@@ -129,7 +129,7 @@ B = P*M*P;
 %No positive real-parts for stability
 %CFL relevant
 figure;
-ee=eig(h*B);
+ee=eigs(hx*M);
 plot(real(ee),imag(ee),'*','MarkerSize',8);
 
 %CHANGE TITLE FOR UNDERSTANDING
