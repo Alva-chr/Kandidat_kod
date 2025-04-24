@@ -11,7 +11,7 @@ NyS = kron(Im_x, e1_y');
 NyN = kron(Im_x, em_y');  
 
 L_w = [ e3*NxW;
-        e4*NxW) ];
+        e4*NxW ];
 L_e = [ e3*NxE;
         e4*NxE ];
 
