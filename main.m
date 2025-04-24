@@ -4,18 +4,18 @@
 % L: Lenght of room
 % H: Height of room
 
-m_x = 7;
-m_y = 4;
+m_x = 15;
+m_y = 15;
 
 W_x = 20;
-W_y = 10;
+W_y = 20;
 
 %gridspacing for height and length
 hx = W_x/(m_x-1);
 hy = W_y/(m_y-1);
 
 x0 = 10;
-y0 = 5;
+y0 = 10;
 
 sig = 1;
 
@@ -46,8 +46,8 @@ y = 0 : hy : W_y;
 
 [X, Y] = ndgrid(x, y);
 
-Z = exp(-0.7*((X-x0).^2+(Y-y0).^2));
-v_x0 = sparse(Z(:));
+Z = exp(-0.7*((X-x0+1).^2+(Y-y0+1).^2))-exp(-0.7*((X-x0-1).^2+(Y-y0-1).^2));
+v_x0 = sparse(m_x*m_y,1);
 v_y0 = sparse(Z(:));
 
 sigma_xx0 = sparse(m_x*m_y,1);
@@ -124,16 +124,16 @@ M = C\(D_x+D_y);
 %GÖR ALLT SPARSE FORMAT
 %No positive real-parts for stability
 %CFL relevant
-figure;
-ee=eigs(hx*M);
-plot(real(ee),imag(ee),'*','MarkerSize',8);
-
-%CHANGE TITLE FOR UNDERSTANDING
-title('Eigenvalues to h\cdot B')
-
-xlabel('\Re(h\cdotB)');ylabel('\Im(h\cdotB)');
-ax = gca;          % current axes
-ax.FontSize = 10;
+% figure;
+% ee=eigs(hx*M);
+% plot(real(ee),imag(ee),'*','MarkerSize',8);
+% 
+% %CHANGE TITLE FOR UNDERSTANDING
+% title('Eigenvalues to h\cdot B')
+% 
+% xlabel('\Re(h\cdotB)');ylabel('\Im(h\cdotB)');
+% ax = gca;          % current axes
+% ax.FontSize = 10;
 
 
 
@@ -152,34 +152,45 @@ ax.FontSize = 10;
 
 
 %Simulation stuff
-t = 0; T = 0.5;
+t = 0; T = 5;
 dt = 0.001; %ändra efter CFL
 count = 0;
 
-plotData = reshape(e1*u, m_x, m_y);
+plotDatax = reshape(e1*u, m_x, m_y);
+
+plotDatay = reshape(e2*u, m_x, m_y);
+
+plotData = sqrt(plotDatax.^2 + plotDatay.^2);
 
 %IC plot
 figure;
-hSurf = surf(X,Y,plotData);
-shading interp;
-colormap jet;
+hSurf = surf(X,Y,plotDatay);
 colorbar;
+caxis([0 0.14])
 axis tight;
-xlabel('x'); ylabel('y'); zlabel('x-hastig')
+xlim([0 W_x])
+ylim([0 W_y])
+zlim([-0.3 1.5])
+xlabel('x'); ylabel('y'); zlabel('x-hastighet')
 
 while t < T
     u_next = RK4(u,dt,M);
     t = dt + t;
-    whos u
     count = count +1;
-    plotData = reshape(e1*u, m_x, m_y);
 
-    if mod(count,10) == 0
+    plotDatax = reshape(e1*u, m_x, m_y);
+    plotDatay = reshape(e2*u, m_x, m_y);
+
+    plotData = sqrt(plotDatax.^2 + plotDatay.^2);
+
+    if mod(count,5) == 0
         set(hSurf, 'ZData', plotData);
         drawnow;
     end
     u = u_next;
 end
 
+%Vad kan vara fel?
+% - vår hastighet ser inte skillnad i x och y-led 
 
 
