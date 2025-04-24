@@ -54,10 +54,14 @@ sigma_xx0 = sparse(m_x*m_y,1);
 sigma_xy0 = sparse(m_x*m_y,1);
 sigma_yy0 = sparse(m_x*m_y,1);
 
+whos sigma_xx0
 
 u = e1'*v_x0+e2'*v_y0+e3'*sigma_xx0+e4'*sigma_xy0+e5'*sigma_yy0;
 
 TEST = e01'*v_x0;
+
+whos 
+
 
 
 [H_x, HI_x, Dp_x, Dm_x, e1_x, em_x] = d1_upwind_2(m_x*m_y, hx);
@@ -153,7 +157,7 @@ ax.FontSize = 10;
 
 %Simulation stuff
 t = 0; T = 0.5;
-dt = 0.001; %ändra efter CFL
+dt = 0.1; %ändra efter CFL
 count = 0;
 
 plotData = reshape(e1*u, m_x, m_y);
@@ -170,7 +174,7 @@ xlabel('x'); ylabel('y'); zlabel('x-hastig')
 while t < T
     u_next = RK4(u,dt,M);
     t = dt + t;
-    whos u
+    
     count = count +1;
     plotData = reshape(e1*u, m_x, m_y);
 
