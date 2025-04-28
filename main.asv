@@ -113,8 +113,8 @@ HII = inv(H5*C);
 I = speye(5*m_x*m_y);
 
 %Defining projectionoperator, one for each direction is needed
-P_x = I - HII * L_x' * inv(L_x * HII * L_x') * L_x; %#ok<MINV> 
-P_y = I - HII * L_y' * inv(L_y * HII * L_y') * L_y; %#ok<MINV> 
+P_x = I - HII (* L_x' * (L_x * HII * L_x' \ L_x)); 
+P_y = I - HII (* L_y' * (L_y * HII * L_y'\ L_y)); 
 
 
 
@@ -181,7 +181,7 @@ plotData = sqrt(plotDatax.^2 + plotDatay.^2);
 figure;
 hSurf = surf(X,Y,plotData);
 colorbar;
-clim([0 0.14])  
+caxis([0 0.14])  
 axis tight;
 xlim([0 W_x])
 ylim([0 W_y])
