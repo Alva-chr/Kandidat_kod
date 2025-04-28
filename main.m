@@ -4,7 +4,7 @@
 % L: Lenght of room
 % H: Height of room
 
-m_x = 15;
+m_x = 10;
 m_y = 15;
 
 W_x = 20;
@@ -46,8 +46,8 @@ y = 0 : hy : W_y;
 
 [X, Y] = ndgrid(x, y);
 
-Z = exp(-0.7*((X-x0+1).^2+(Y-y0+1).^2))-exp(-0.7*((X-x0-1).^2+(Y-y0-1).^2));
-v_x0 = sparse(m_x*m_y,1);
+Z = exp(-0.7*((X-x0).^2+(Y-y0).^2));
+v_x0 = sparse(Z(:));
 v_y0 = sparse(Z(:));
 
 sigma_xx0 = sparse(m_x*m_y,1);
@@ -60,8 +60,14 @@ u = e1'*v_x0+e2'*v_y0+e3'*sigma_xx0+e4'*sigma_xy0+e5'*sigma_yy0;
 TEST = e01'*v_x0;
 
 
-[H_x, HI_x, Dp_x, Dm_x, e1_x, em_x] = d1_upwind_2(m_x*m_y, hx);
-[H_y, HI_y, Dp_y, Dm_y, e1_y, em_y] = d1_upwind_2(m_y*m_x, hy);
+[H_x, HI_x, Dp_x, Dm_x, e1_x, em_x] = d1_upwind_2(m_x, hx);
+[H_y, HI_y, Dp_y, Dm_y, e1_y, em_y] = d1_upwind_2(m_y, hy);
+
+%Flippa ordning
+Dp_y2 = kron(Dp_y,speye(m_x) );
+Dm_y2 = kron(Dm_y, speye(m_x));
+Dp_x2 = kron(speye(m_y), Dp_x);
+Dm_x2 = kron(speye(m_y),Dm_x );
 
 %Material 'constants', will vary by function
 lambda = 1;  %First lamé parameter
@@ -80,41 +86,49 @@ C = [RH, Ze,   Ze, Ze, Ze;
      Ze,   Ze,   Ze, Id, Ze;
      Ze,   Ze,   Ze, Ze, Id];
 
-A = [Ze,           Ze, Id*Dp_x, Ze, Ze;
-     Ze,           Ze, Ze, Id*Dp_x, Ze;
-     (LA+2*MU)*Dm_x, Ze, Ze, Ze, Ze;
-     Ze,           MU*Dm_x, Ze, Ze, Ze;
-     LA*Dm_x,      Ze, Ze, Ze, Ze];
+A = [Ze,           Ze, Id*Dp_x2, Ze, Ze;
+     Ze,           Ze, Ze, Id*Dp_x2, Ze;
+     (LA+2*MU)*Dm_x2, Ze, Ze, Ze, Ze;
+     Ze,           MU*Dm_x2, Ze, Ze, Ze;
+     LA*Dm_x2,      Ze, Ze, Ze, Ze];
 
-B = [Ze, Ze,          Ze, Id*Dp_y, Ze;
-     Ze, Ze,          Ze, Ze, Id*Dp_y;
-     Ze, LA*Dm_y,     Ze, Ze, Ze;
-     MU*Dm_y, Ze,         Ze, Ze, Ze;
-     Ze, (LA+2*MU)*Dm_y, Ze, Ze, Ze];
+B = [Ze, Ze,          Ze, Id*Dp_y2, Ze;
+     Ze, Ze,          Ze, Ze, Id*Dp_y2;
+     Ze, LA*Dm_y2,     Ze, Ze, Ze;
+     MU*Dm_y2, Ze,         Ze, Ze, Ze;
+     Ze, (LA+2*MU)*Dm_y2, Ze, Ze, Ze];
 
 
 %Characteristic Boundary operator
-%BC_fun;
+[L_w, L_e, L_s, L_n] = BC_fun(e1, e2, e3, e4, e5, m_x, m_y, e1_x, em_x, e1_y, em_y);
 
-%L_x = [L_w; L_e];
-%L_y = [L_s; L_n];
+L_x = [L_w; L_e];
+L_y = [L_s; L_n];
 
+H = kron(H_y,H_x);
+H5 = kron( speye(5), H);
 %Discrete innerproduct
-%HII = inv(kron(H,H)*C);
+HII = inv(H5*C);
+
+I = speye(5*m_x*m_y);
 
 %Defining projectionoperator, one for each direction is needed
-%P_x = I - HII * L_x' * inv(L_x * HII * L_x') * L_x; %#ok<MINV> 
-%P_y = I - HII * L_y' * inv(L_y * HII * L_y') * L_y; %#ok<MINV> 
+P_x = I - HII * L_x' * inv(L_x * HII * L_x') * L_x; %#ok<MINV> 
+P_y = I - HII * L_y' * inv(L_y * HII * L_y') * L_y; %#ok<MINV> 
 
-%P = P_x*P_y;
+
+
+P = P_x*P_y;
 
 D_x = A; 
 D_y = B; 
 
+disp(em_y)
 
 M = C\(D_x+D_y);
 
-%B = P*M*P;
+
+OP = P*M*P;
 
 %u_t = B*U;
 
@@ -124,16 +138,18 @@ M = C\(D_x+D_y);
 %GÖR ALLT SPARSE FORMAT
 %No positive real-parts for stability
 %CFL relevant
-% figure;
-% ee=eigs(hx*M);
-% plot(real(ee),imag(ee),'*','MarkerSize',8);
-% 
-% %CHANGE TITLE FOR UNDERSTANDING
-% title('Eigenvalues to h\cdot B')
-% 
-% xlabel('\Re(h\cdotB)');ylabel('\Im(h\cdotB)');
-% ax = gca;          % current axes
-% ax.FontSize = 10;
+%testa köra längre simulering
+
+figure;
+ee=eig(full(H5*C*OP));
+plot(real(ee),imag(ee),'*','MarkerSize',8);
+
+%CHANGE TITLE FOR UNDERSTANDING
+title('Eigenvalues to h\cdot B')
+
+xlabel('\Re(h\cdotB)');ylabel('\Im(h\cdotB)');
+ax = gca;          % current axes
+ax.FontSize = 10;
 
 
 
@@ -152,7 +168,7 @@ M = C\(D_x+D_y);
 
 
 %Simulation stuff
-t = 0; T = 5;
+t = 0; T = 20;
 dt = 0.001; %ändra efter CFL
 count = 0;
 
@@ -164,7 +180,7 @@ plotData = sqrt(plotDatax.^2 + plotDatay.^2);
 
 %IC plot
 figure;
-hSurf = surf(X,Y,plotDatay);
+hSurf = surf(X,Y,plotData);
 colorbar;
 caxis([0 0.14])
 axis tight;
@@ -174,7 +190,7 @@ zlim([-0.3 1.5])
 xlabel('x'); ylabel('y'); zlabel('x-hastighet')
 
 while t < T
-    u_next = RK4(u,dt,M);
+    u_next = RK4(u,dt,OP);
     t = dt + t;
     count = count +1;
 
@@ -183,7 +199,7 @@ while t < T
 
     plotData = sqrt(plotDatax.^2 + plotDatay.^2);
 
-    if mod(count,5) == 0
+    if mod(count,10) == 0
         set(hSurf, 'ZData', plotData);
         drawnow;
     end
@@ -191,6 +207,9 @@ while t < T
 end
 
 %Vad kan vara fel?
-% - vår hastighet ser inte skillnad i x och y-led 
+% - disp med input vad man vill plotta
+% - Snygga till koden
+% - Få in ett nytt rum i domänen
+% - Testa olika komponenter till 0, är nån stabil? Mental sjukhus?
 
 
