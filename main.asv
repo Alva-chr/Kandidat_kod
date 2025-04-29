@@ -1,17 +1,12 @@
 
 
 %Defining number of gridpoints
-m_x = 50;
+m_x = 30;
 m_y = 20;
 
 %Defining lenght of domain
-W_x = 50;
+W_x = 20;
 W_y = 20;
-
-roomLength = 0.5*W_y;
-roomHeight = 0.5*W_y;
-roomX = 0.8*W_x;
-roomY = 0.25*W_y;
 
 %gridspacing for height and length
 hx = W_x/(m_x-1);
@@ -75,13 +70,13 @@ lambda = 1;  %First lamé parameter
 mu = 1;      %Second lamé parameter
 rho = 1;     %Density
 
-
+roomLength = 0.1*W_x;
+roomHeight = 0.1*W_y;
+roomX = 0.75*W_x;
+roomY = 0.75*W_y;
 
 [LA, MU, RH] = materialValues(roomX,roomY,roomLength,roomHeight,m_x,m_y,X,Y,lambda,mu,rho);
 
-% LA = spdiags(lambda*ones(m_x*m_y), 0, m_x*m_y, m_x*m_y);
-% MU = spdiags(lambda*ones(m_x*m_y), 0, m_x*m_y, m_x*m_y);
-% RH = spdiags(lambda*ones(m_x*m_y), 0, m_x*m_y, m_x*m_y);
 
 %Defining matrixes as blockmatrix for equation 11 in report
 C = [RH, Ze,   Ze, Ze, Ze;
@@ -149,13 +144,9 @@ plot_answer = int8(input ("Which parameter do you wanna plot from above choices?
 
 %Needed simulation defintions
 T = input("Input wanted length of simulation (integer): ");
-if ~( isnumeric(T) && isscalar(T) )
-    T = 10;
-end
+
 dt = input("Input wanted timestep: ");
-if ~( isnumeric(dt) && isscalar(dt) )
-    dt = 0.001;
-end
+
 
 %Plotting eigenvalues 
 if eig_answer == "Y"
@@ -219,9 +210,6 @@ ylim([0 W_y])
 zlim([-0.3 1.5])
 xlabel('x'); ylabel('y'); zlabel(plot_parameters(plot_answer))
 
-axis tight
-daspect([1 1 1])
-
 while t < T
     u_next = RK4(u,dt,OP);
     t = dt + t;
@@ -252,7 +240,7 @@ while t < T
     if mod(count,15) == 0
         set(hSurf, 'ZData', plotData);
         drawnow;
-        disp(["displaying " count])
+        disp("displaying ", count)
     end
     u = u_next;
 end

@@ -15,6 +15,6 @@ L_e = [ e_E*e1;
 
 L_s = [ e_S*e1;
         e_S*e2 ];
-L_n = [ e_N*e5;
-        e_N*e4 ];
+L_n = [ e_N*e1;
+        e_N*e2 ];
 end
