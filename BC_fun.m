@@ -10,11 +10,11 @@ e_E = kron(Im_y, em_x');
 
 L_w = [ e_W*e1;
         e_W*e2 ];
-L_e = [ e_E*e1;
-        e_E*e2 ];
+L_e = [ e_E*e3;
+        e_E*e4];
 
-L_s = [ e_S*e1;
-        e_S*e2 ];
-L_n = [ e_N*e1;
-        e_N*e2 ];
+L_s = [ e_S*e4;
+        e_S*e5 ];
+L_n = [ e_N*e4;
+        e_N*e5 ];
 end

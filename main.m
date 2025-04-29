@@ -1,11 +1,11 @@
 
 
 %Defining number of gridpoints
-m_x = 50;
+m_x = 20;
 m_y = 20;
 
 %Defining lenght of domain
-W_x = 50;
+W_x = 20;
 W_y = 20;
 
 roomLength = 0.5*W_y;
@@ -61,8 +61,8 @@ u = e1'*v_x0+e2'*v_y0+e3'*sigma_xx0+e4'*sigma_xy0+e5'*sigma_yy0;
 
 
 %Constructing SBP operators
-[H_x, HI_x, Dp_x, Dm_x, e1_x, em_x] = d1_upwind_2(m_x, hx);
-[H_y, HI_y, Dp_y, Dm_y, e1_y, em_y] = d1_upwind_2(m_y, hy);
+[H_x, HI_x, Dp_x, Dm_x, e1_x, em_x] = d1_upwind_6(m_x, hx);
+[H_y, HI_y, Dp_y, Dm_y, e1_y, em_y] = d1_upwind_6(m_y, hy);
 
 %
 Dp_y2 = kron(Dp_y,speye(m_x) );
@@ -71,9 +71,9 @@ Dp_x2 = kron(speye(m_y), Dp_x);
 Dm_x2 = kron(speye(m_y),Dm_x );
 
 %Material 'constants', will vary by function
-lambda = 1;  %First lamé parameter
-mu = 1;      %Second lamé parameter
-rho = 1;     %Density
+lambda = pi;  %First lamé parameter
+mu = 2;      %Second lamé parameter
+rho = exp(1);     %Density
 
 
 
@@ -87,7 +87,7 @@ rho = 1;     %Density
 C = [RH, Ze,   Ze, Ze, Ze;
      Ze,   RH, Ze, Ze, Ze;
      Ze,   Ze,   (LA+2*MU)/(4*MU*(LA+MU)), Ze, (-LA)/(4*MU*(LA+MU));
-     Ze,   Ze,   Ze, (1)/(MU), Ze;
+     Ze,   Ze,   Ze, inv(MU), Ze;
      Ze,   Ze,   (-LA)/(4*MU*(LA+MU)), Ze, (LA+2*MU)/(4*MU*(LA+MU))];
 
 A = [Ze,           Ze, Dp_x2, Ze, Ze;
@@ -114,13 +114,13 @@ L_y = [L_s; L_n];
 %Discrete inner product
 H = kron(H_y,H_x);
 H5 = kron( speye(5), H);
-HII = inv(H5*C);
+HII = H5*C;
 
 I = speye(5*m_x*m_y);
 
 %Defining projectionoperator, one for each direction is needed
-P_x = I - HII * L_x' * inv(L_x * HII * L_x') * L_x; %#ok<MINV> 
-P_y = I - HII * L_y' * inv(L_y * HII * L_y') * L_y; %#ok<MINV> 
+P_x = I - (HII\L_x') * ((L_x * (HII \ L_x')) \ L_x);  
+P_y = I - (HII\L_y') * ((L_y * (HII \ L_y')) \ L_y);
 
 %Defining the total projection vector
 P = P_x*P_y;

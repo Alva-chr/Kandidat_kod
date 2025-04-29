@@ -5,7 +5,7 @@ domain = ones(m_x,m_y);
 
 inside = (X >= roomX) & (X <= roomX+roomLength) & (Y >= roomY) & (Y <= roomY+roomHeight);
 
-domain(inside) = 0.0001;
+domain(inside) = 1;
 
 LA = lambda*domain;
 
