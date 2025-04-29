@@ -1,4 +1,0 @@
-[LA, MU, RH] = materialValues(pos_x,pos_y,room_l,room_h,m_x,m_y,lambda,mu,rho);
-
-LA = zeros(m_x,m_y);
-

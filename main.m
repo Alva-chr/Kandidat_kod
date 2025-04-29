@@ -86,21 +86,21 @@ rho = 1;     %Density
 %Defining matrixes as blockmatrix for equation 11 in report
 C = [RH, Ze,   Ze, Ze, Ze;
      Ze,   RH, Ze, Ze, Ze;
-     Ze,   Ze,   Id, Ze, Ze;
-     Ze,   Ze,   Ze, Id, Ze;
-     Ze,   Ze,   Ze, Ze, Id];
+     Ze,   Ze,   (LA+2*MU)/(4*MU*(LA+MU)), Ze, (-LA)/(4*MU*(LA+MU));
+     Ze,   Ze,   Ze, (1)/(MU), Ze;
+     Ze,   Ze,   (-LA)/(4*MU*(LA+MU)), Ze, (LA+2*MU)/(4*MU*(LA+MU))];
 
-A = [Ze,           Ze, Id*Dp_x2, Ze, Ze;
-     Ze,           Ze, Ze, Id*Dp_x2, Ze;
-     (LA+2*MU)*Dm_x2, Ze, Ze, Ze, Ze;
-     Ze,           MU*Dm_x2, Ze, Ze, Ze;
-     LA*Dm_x2,      Ze, Ze, Ze, Ze];
+A = [Ze,           Ze, Dp_x2, Ze, Ze;
+     Ze,           Ze, Ze, Dp_x2, Ze;
+     Dm_x2, Ze, Ze, Ze, Ze;
+     Ze,           Dm_x2, Ze, Ze, Ze;
+     Ze,      Ze, Ze, Ze, Ze];
 
-B = [Ze, Ze,          Ze, Id*Dp_y2, Ze;
-     Ze, Ze,          Ze, Ze, Id*Dp_y2;
-     Ze, LA*Dm_y2,     Ze, Ze, Ze;
-     MU*Dm_y2, Ze,         Ze, Ze, Ze;
-     Ze, (LA+2*MU)*Dm_y2, Ze, Ze, Ze];
+B = [Ze, Ze,          Ze, Dp_y2, Ze;
+     Ze, Ze,          Ze, Ze, Dp_y2;
+     Ze, Ze,     Ze, Ze, Ze;
+     Dm_y2, Ze,         Ze, Ze, Ze;
+     Ze, Dm_y2, Ze, Ze, Ze];
 
 
 %Defining and creating BC for west, east, south and north boundary
