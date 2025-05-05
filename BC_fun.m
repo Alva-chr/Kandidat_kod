@@ -8,10 +8,13 @@ e_N = kron(em_y', Im_x);
 e_W = kron(Im_y, e1_x');   
 e_E = kron(Im_y, em_x');  
 
-L_w = [ e_W*e1;
-        e_W*e2 ];
+e_W_no_corner = e_W(2:end-1,:);
+e_E_no_corner = e_E(2:end-1,:);
+
+L_w = [ e_W*e3;
+        e_W_no_corner*e4 ];
 L_e = [ e_E*e3;
-        e_E*e4];
+        e_E_no_corner*e4];
 
 L_s = [ e_S*e4;
         e_S*e5 ];

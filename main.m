@@ -118,12 +118,9 @@ HII = H5*C;
 
 I = speye(5*m_x*m_y);
 
-%Defining projectionoperator, one for each direction is needed
-P_x = I - (HII\L_x') * ((L_x * (HII \ L_x')) \ L_x);  
-P_y = I - (HII\L_y') * ((L_y * (HII \ L_y')) \ L_y);
+L = [L_w; L_e; L_s; L_n];
 
-%Defining the total projection vector
-P = P_x*P_y;
+P = I - (HII\L')* ((L* (HII\ L'))\ L);
 
 %Renaming A and B to be easier read
 D_x = A; 
