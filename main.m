@@ -1,11 +1,11 @@
 
 
 %Defining number of gridpoints
-m_x = 20;
-m_y = 20;
+m_x = 60;
+m_y = 40;
 
 %Defining lenght of domain
-W_x = 20;
+W_x = 30;
 W_y = 20;
 
 roomLength = 0.5*W_y;
@@ -18,8 +18,8 @@ hx = W_x/(m_x-1);
 hy = W_y/(m_y-1);
 
 %Defining startpoint of gausspoint
-x0 = 10;
-y0 = 10;
+x0 = W_y/2;
+y0 = W_y/2;
 
 sig = 1;
 
@@ -43,6 +43,7 @@ e5 = [Ze,Ze,Ze,Ze,Id];
 x = 0 : hx : W_x;
 y = 0 : hy : W_y;
 
+
 [X, Y] = ndgrid(x, y);
 
 %defining gausspoint IC
@@ -61,8 +62,8 @@ u = e1'*v_x0+e2'*v_y0+e3'*sigma_xx0+e4'*sigma_xy0+e5'*sigma_yy0;
 
 
 %Constructing SBP operators
-[H_x, HI_x, Dp_x, Dm_x, e1_x, em_x] = d1_upwind_6(m_x, hx);
-[H_y, HI_y, Dp_y, Dm_y, e1_y, em_y] = d1_upwind_6(m_y, hy);
+[H_x, HI_x, Dp_x, Dm_x, e1_x, em_x] = d1_upwind_3(m_x, hx);
+[H_y, HI_y, Dp_y, Dm_y, e1_y, em_y] = d1_upwind_3(m_y, hy);
 
 %
 Dp_y2 = kron(Dp_y,speye(m_x) );
@@ -70,14 +71,22 @@ Dm_y2 = kron(Dm_y, speye(m_x));
 Dp_x2 = kron(speye(m_y), Dp_x);
 Dm_x2 = kron(speye(m_y),Dm_x );
 
+C_p = 1500;
+C_s = 800;
+rho = 2;     %Density
+
 %Material 'constants', will vary by function
-lambda = pi;  %First lamé parameter
-mu = 2;      %Second lamé parameter
-rho = exp(1);     %Density
+% mu = rho*C_s^2;      %Second lamé parameter
+% lambda = rho*C_p^2-2*mu;  %First lamé parameter
+mu = 1;
+lambda = 1;
+
 
 
 
 [LA, MU, RH] = materialValues(roomX,roomY,roomLength,roomHeight,m_x,m_y,X,Y,lambda,mu,rho);
+
+
 
 % LA = spdiags(lambda*ones(m_x*m_y), 0, m_x*m_y, m_x*m_y);
 % MU = spdiags(lambda*ones(m_x*m_y), 0, m_x*m_y, m_x*m_y);
@@ -86,9 +95,9 @@ rho = exp(1);     %Density
 %Defining matrixes as blockmatrix for equation 11 in report
 C = [RH, Ze,   Ze, Ze, Ze;
      Ze,   RH, Ze, Ze, Ze;
-     Ze,   Ze,   (LA+2*MU)/(4*MU*(LA+MU)), Ze, (-LA)/(4*MU*(LA+MU));
+     Ze,   Ze,  ((LA+2*MU)/(4*MU))/(LA+MU), Ze, ((-LA)/(4*MU))/(LA+MU);
      Ze,   Ze,   Ze, inv(MU), Ze;
-     Ze,   Ze,   (-LA)/(4*MU*(LA+MU)), Ze, (LA+2*MU)/(4*MU*(LA+MU))];
+     Ze,   Ze,   ((-LA)/(4*MU))/(LA+MU), Ze, ((LA+2*MU)/(4*MU))/(LA+MU)];
 
 A = [Ze,           Ze, Dp_x2, Ze, Ze;
      Ze,           Ze, Ze, Dp_x2, Ze;
@@ -104,7 +113,10 @@ B = [Ze, Ze,          Ze, Dp_y2, Ze;
 
 
 %Defining and creating BC for west, east, south and north boundary
-[L_w, L_e, L_s, L_n] = BC_fun(e1, e2, e3, e4, e5, m_x, m_y, e1_x, em_x, e1_y, em_y);
+[L_w, L_e, L_s, L_n] = boundaryNeumann(e1, e2, e3, e4, e5, m_x, m_y, e1_x, em_x, e1_y, em_y);
+
+%[L_w, L_e, L_s, L_n] = boundaryAbsorbing(e1, e2, e3, e4, e5, m_x, m_y, e1_x, em_x, e1_y, em_y, C_p, C_s, rho);
+
 
 %Defining Characteristic Boundary operator
 L_x = [L_w; L_e];
@@ -207,13 +219,14 @@ count = 0;
 figure;
 hSurf = surf(X,Y,plotData);
 
+
 %Style changes for graph
 colorbar;
-clim([0 0.14])  
+%clim([0 0.14])  
 axis tight;
 xlim([0 W_x])
 ylim([0 W_y])
-zlim([-0.3 1.5])
+zlim([-0.3 max(e3*u)])
 xlabel('x'); ylabel('y'); zlabel(plot_parameters(plot_answer))
 
 axis tight

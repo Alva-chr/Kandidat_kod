@@ -1,21 +1,24 @@
-function [LA, MU, RH] = materialValues(roomX,roomY,roomLength,roomHeight,m_x,m_y,X,Y,lambda,mu,rho);
+function [LA, MU, RH] = materialValues(roomX,roomY,roomLength,roomHeight,m_x,m_y,X,Y,lambda,mu,rho)
 
 domain = ones(m_x,m_y);
-
+LA = lambda*domain;
+MU = mu*domain;
+RH = rho*domain;
 
 inside = (X >= roomX) & (X <= roomX+roomLength) & (Y >= roomY) & (Y <= roomY+roomHeight);
 
-domain(inside) = 1;
+LA(inside) = 14.632;
+MU(inside) = 0.0001;
+RH(inside) = 1.293;
 
-LA = lambda*domain;
 
 LA = spdiags(LA(:),0,m_x*m_y,m_x*m_y);
 
 
-MU = mu*domain;
+
 MU = spdiags(MU(:),0,m_x*m_y,m_x*m_y);
 
-RH = rho*domain;
+
 RH = spdiags(RH(:),0,m_x*m_y,m_x*m_y);
 
 
