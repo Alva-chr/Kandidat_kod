@@ -1,29 +1,10 @@
-%Input parameters
-frequency = 1;
-punkt
-input1
+function [] = simulation(frequency, x0, y0, m_x, m_y, W_x, W_y, roomLength, roomHeight, roomX, roomY, mu, lambda,rho, BC, eig_answer, plot_answer, T, dt)
 
-
-%Defining number of gridpoints
-m_x = 60;
-m_y = 15;
-
-%Defining lenght of domain
-W_x = 40;
-W_y = 10;
-
-roomLength = 0.5*W_y;
-roomHeight = 0.5*W_y;
-roomX = 0.8*W_x;
-roomY = 0.25*W_y;
 
 %gridspacing for height and length
 hx = W_x/(m_x-1);
 hy = W_y/(m_y-1);
 
-%Defining startpoint of gausspoint
-x0 = W_y/2;
-y0 = W_y/2;
 
 
 
@@ -39,46 +20,27 @@ e4 = [Ze,Ze,Ze,Id,Ze];
 e5 = [Ze,Ze,Ze,Ze,Id];
 
 
-%Defining gridspace
+%Defining gridspace and grid
 x = 0 : hx : W_x;
 y = 0 : hy : W_y;
-
-
 [X, Y] = ndgrid(x, y);
 
-%defining gausspoint IC
-Z = exp(-0.7*((X-x0).^2+(Y-y0).^2));
-v_x0 = sparse(Z(:));
-v_y0 = sparse(Z(:));
 
-%Defining IC for sigmas
-sigma_xx0 = sparse(m_x*m_y,1);
-sigma_xy0 = sparse(m_x*m_y,1);
-sigma_yy0 = sparse(m_x*m_y,1);
 
 %Contstructing u for IC
-%u = e1'*v_x0+e2'*v_y0+e3'*sigma_xx0+e4'*sigma_xy0+e5'*sigma_yy0;
 u = e1'*sparse(m_x*m_y,1)+e2'*sparse(m_x*m_y,1)+e3'*sparse(m_x*m_y,1)+e4'*sparse(m_x*m_y,1)+e5'*sparse(m_x*m_y,1);
 %Constructing SBP operators
+
 [H_x, HI_x, Dp_x, Dm_x, e1_x, em_x] = d1_upwind_3(m_x, hx);
 [H_y, HI_y, Dp_y, Dm_y, e1_y, em_y] = d1_upwind_3(m_y, hy);
 
-%
 Dp_y2 = kron(Dp_y,speye(m_x) );
 Dm_y2 = kron(Dm_y, speye(m_x));
 Dp_x2 = kron(speye(m_y), Dp_x);
 Dm_x2 = kron(speye(m_y),Dm_x );
 
-C_p = 1500;
-C_s = 800;
-rho = 2000;     %Density
 
-%Material 'constants', will vary by function
-mu = rho*C_s^2;      %Second lamé parameter
-lambda = rho*C_p^2-2*mu;  %First lamé parameter
-% mu = 1;
-% lambda = 1;
-
+%Creating room
 [LA, MU, RH] = materialValues(roomX,roomY,roomLength,roomHeight,m_x,m_y,X,Y,lambda,mu,rho);
 
 %Defining matrixes as blockmatrix for equation 11 in report
@@ -102,16 +64,13 @@ B = [Ze, Ze,          Ze, Dp_y2, Ze;
 
 
 %Defining and creating BC for west, east, south and north boundary
-%[L_w, L_e, L_s, L_n] = boundaryNeumann(e1, e2, e3, e4, e5, m_x, m_y, e1_x, em_x, e1_y, em_y);
-%[L_w, L_e, L_s, L_n] = boundaryAbsorbing(e1, e2, e3, e4, e5, m_x, m_y, e1_x, em_x, e1_y, em_y, C_p, C_s, rho);
-
-[L_w, L_e, L_s, L_n] = boundaryAbsorbingNeumann(e1, e2, e3, e4, e5, m_x, m_y, e1_x, em_x, e1_y, em_y, C_p, C_s, rho);
-
-
-%Defining Characteristic Boundary operator
-L_x = [L_w; L_e];
-L_y = [L_s; L_n];
-
+if BC == "NBC"
+    [L_w, L_e, L_s, L_n] = boundaryNeumann(e1, e2, e3, e4, e5, m_x, m_y, e1_x, em_x, e1_y, em_y);
+elseif BC == "ABC" 
+    [L_w, L_e, L_s, L_n] = boundaryAbsorbing(e1, e2, e3, e4, e5, m_x, m_y, e1_x, em_x, e1_y, em_y, C_p, C_s, rho);
+else 
+    [L_w, L_e, L_s, L_n] = boundaryAbsorbingNeumann(e1, e2, e3, e4, e5, m_x, m_y, e1_x, em_x, e1_y, em_y, C_p, C_s, rho);
+end
 
 %Discrete inner product
 H = kron(H_y,H_x);
@@ -133,13 +92,11 @@ M = C\(D_x+D_y);
 %Projection to hopefully make sure our BC can be handled
 OP = P*M*P;
 
-p_x = W_y/2;
-p_y = W_y/2;
 
 %Setting up point source location
-%Findong the nearest grid‐indices to (p_x, p_y)
-[~, ix] = min(abs(x - p_x));
-[~, iy] = min(abs(y - p_y));
+%Findong the nearest grid‐indicess to (p_x, p_y)
+[~, ix] = min(abs(x - x0));
+[~, iy] = min(abs(y - y0));
 
 %Building a mask with a single one
 PointSource = sparse(m_x,m_y);
@@ -152,27 +109,7 @@ f = e1'*PointSource+e2'*sparse(m_x*m_y,1)+e3'*sparse(m_x*m_y,1)+e4'*sparse(m_x*m
 %f = e1'*sparse(m_x*m_y,1)+e2'*sparse(m_x*m_y,1)+e3'*sparse(m_x*m_y,1)+e4'*sparse(m_x*m_y,1)+e5'*sparse(m_x*m_y,1);
 f = H5*f;
 
-%%% Collecting inputs from users regarding what needs to be plot %%%
-%Eigenvalues plot or not
-eig_answer = upper(input ("Do you want to plot the eigenvalues of h*M (Y/N)?  ", "s"));
-
-%What parameters user wants to plot
-plot_parameters = ["V_x", "V_y", "V", "Sigma_xx", "Sigma_xy", "Sigma_xx"];
-for i = 1:length(plot_parameters)
-    disp([num2str(i) ': ' plot_parameters(i)])
-end
-
-plot_answer = int8(input ("Which parameter do you wanna plot from above choices? Enter number from 1 to 6 "));
-
-%Needed simulation defintions
-T = input("Input wanted length of simulation (integer): ");
-if ~( isnumeric(T) && isscalar(T) )
-    T = 10;
-end
-dt = input("Input wanted timestep: ");
-if ~( isnumeric(dt) && isscalar(dt) )
-    dt = 0.00001;
-end
+plot_parameters = ["V_x","V_y","V","Sigma_xx","Sigma_xy","Sigma_xx"];
 
 %Plotting eigenvalues 
 if eig_answer == "Y"
@@ -203,13 +140,13 @@ elseif plot_answer == 3
     plotData = sqrt(plotDatax.^2 + plotDatay.^2);
 
 elseif plot_answer == 4
-%Change for Sigma_xx
+    plotData = reshape(e3*u, m_x, m_y);
 
 elseif plot_answer == 5
-%Change for Sigma_xy
+    plotData = reshape(e4*u, m_x, m_y);
 
 elseif plot_answer == 6
-%Change for Sigma_yy
+    plotData = reshape(e5*u, m_x, m_y);
 
 else
     plot_answer = 3;
@@ -258,13 +195,13 @@ while t < T
         plotData = sqrt(plotDatax.^2 + plotDatay.^2);
     
     elseif plot_answer == 4
-        %Change for Sigma_xx
+        plotData = reshape(e3*u, m_x, m_y);
     
     elseif plot_answer == 5
-        %Change for Sigma_xy
+        plotData = reshape(e4*u, m_x, m_y);
     
     elseif plot_answer == 6
-        %Change for Sigma_yy
+        plotData = reshape(e5*u, m_x, m_y);
     end
 
     if mod(count,15) == 0
@@ -274,11 +211,4 @@ while t < T
     end
     u = u_next;
 end
-
-%Vad kan vara fel?
-% - disp med input vad man vill plotta
-% - Snygga till koden
-% - Få in ett nytt rum i domänen
-% - Testa olika komponenter till 0, är nån stabil? Mental sjukhus?
-
-
+end
