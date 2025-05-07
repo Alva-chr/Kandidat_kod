@@ -4,12 +4,12 @@ frequency = 1;
 
 
 %Defining number of gridpoints
-m_x = 60;
-m_y = 15;
+m_x = 80;
+m_y = 20;
 
 %Defining lenght of domain
-W_x = 40;
-W_y = 10;
+W_x = 80;
+W_y = 20;
 
 roomLength = 0.5*W_y;
 roomHeight = 0.5*W_y;
@@ -60,8 +60,9 @@ sigma_xy0 = sparse(m_x*m_y,1);
 sigma_yy0 = sparse(m_x*m_y,1);
 
 %Contstructing u for IC
-%u = e1'*v_x0+e2'*v_y0+e3'*sigma_xx0+e4'*sigma_xy0+e5'*sigma_yy0;
-u = e1'*sparse(m_x*m_y,1)+e2'*sparse(m_x*m_y,1)+e3'*sparse(m_x*m_y,1)+e4'*sparse(m_x*m_y,1)+e5'*sparse(m_x*m_y,1);
+u = e1'*v_x0+e2'*v_y0+e3'*sigma_xx0+e4'*sigma_xy0+e5'*sigma_yy0;
+
+%u = e1'*sparse(m_x*m_y,1)+e2'*sparse(m_x*m_y,1)+e3'*sparse(m_x*m_y,1)+e4'*sparse(m_x*m_y,1)+e5'*sparse(m_x*m_y,1);
 %Constructing SBP operators
 [H_x, HI_x, Dp_x, Dm_x, e1_x, em_x] = d1_upwind_3(m_x, hx);
 [H_y, HI_y, Dp_y, Dm_y, e1_y, em_y] = d1_upwind_3(m_y, hy);
@@ -106,9 +107,8 @@ B = [Ze, Ze,          Ze, Dp_y2, Ze;
 
 %Defining and creating BC for west, east, south and north boundary
 %[L_w, L_e, L_s, L_n] = boundaryNeumann(e1, e2, e3, e4, e5, m_x, m_y, e1_x, em_x, e1_y, em_y);
-%[L_w, L_e, L_s, L_n] = boundaryAbsorbing(e1, e2, e3, e4, e5, m_x, m_y, e1_x, em_x, e1_y, em_y, C_p, C_s, rho);
 
-[L_w, L_e, L_s, L_n] = boundaryAbsorbingNeumann(e1, e2, e3, e4, e5, m_x, m_y, e1_x, em_x, e1_y, em_y, C_p, C_s, rho);
+[L_w, L_e, L_s, L_n] = boundaryAbsorbing(e1, e2, e3, e4, e5, m_x, m_y, e1_x, em_x, e1_y, em_y, C_p, C_s, rho);
 
 
 %Defining Characteristic Boundary operator
@@ -145,9 +145,9 @@ p_y = W_y/2;
 [~, iy] = min(abs(y - p_y));
 
 %Building a mask with a single one
-PointSource = sparse(m_x,m_y);
+PointSource = sparse(m_x*m_y,1);
 PointSource(iy, ix) = 1;
-PointSource = sparse(PointSource(:));
+PointSource = sparse(Poi(:));
 
 %Setting up vectors for point sources
 f = e1'*PointSource+e2'*sparse(m_x*m_y,1)+e3'*sparse(m_x*m_y,1)+e4'*sparse(m_x*m_y,1)+e5'*sparse(m_x*m_y,1);

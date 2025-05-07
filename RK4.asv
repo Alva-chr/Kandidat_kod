@@ -1,7 +1,7 @@
 function u_next = RK4 (u, dt, B, t, f, frequency)
     
-    g = @(t) sin(2*pi*frequency*t);
-    %g = @(t) 0;
+    %g = @(t) sin(2*pi*frequency*t);
+    g = @(t) 0;
 
     % RK4 calculations
     k1 = B * u + g(t)*f;
