@@ -1,6 +1,7 @@
 %Input parameters
 frequency = 1;
-
+punkt
+input1
 
 
 %Defining number of gridpoints
@@ -24,15 +25,11 @@ hy = W_y/(m_y-1);
 x0 = W_y/2;
 y0 = W_y/2;
 
-sig = 1;
+
 
 Id = speye(m_x*m_y);
 
 Ze = sparse(m_x*m_y,m_x*m_y);
-
-Id0 = 1+sparse(m_x*m_y,1);
-
-Ze0 = sparse(m_x*m_y,1);
 
 %Block matrix for extracting one specifik component
 e1 = [Id,Ze,Ze,Ze,Ze];
@@ -136,13 +133,11 @@ M = C\(D_x+D_y);
 %Projection to hopefully make sure our BC can be handled
 OP = P*M*P;
 
-p_x = W_y/2;
-p_y = W_y/2;
 
 %Setting up point source location
-%Findong the nearest grid‐indices to (p_x, p_y)
-[~, ix] = min(abs(x - p_x));
-[~, iy] = min(abs(y - p_y));
+%Findong the nearest grid‐indicess to (p_x, p_y)
+[~, ix] = min(abs(x - x0));
+[~, iy] = min(abs(y - y0));
 
 %Building a mask with a single one
 PointSource = sparse(m_x,m_y);
@@ -277,11 +272,3 @@ while t < T
     end
     u = u_next;
 end
-
-%Vad kan vara fel?
-% - disp med input vad man vill plotta
-% - Snygga till koden
-% - Få in ett nytt rum i domänen
-% - Testa olika komponenter till 0, är nån stabil? Mental sjukhus?
-
-
