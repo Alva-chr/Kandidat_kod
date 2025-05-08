@@ -168,6 +168,7 @@ count = 0;
 figure;
 hSurf = surf(X,Y,plotData);
 
+meanPressureTime = sparse(m_x*m_y,m_x*m_y);
 
 %Style changes for graph
 colorbar;
@@ -246,8 +247,10 @@ while t < T
             saveas(gcf, fullpath);
         end
 
-        if (T-t)<=10*dt
-    end|
+        if (T-t)<=1/(f)
+            meanPressureTime = (0.5*e3*(u)+0.5*e5*(u)).^2;
+        end
+    end
 
     if movie == "Y"
         if mod(count,15) == 0
@@ -263,4 +266,13 @@ while t < T
 
     u = u_next;
 end
+
+meanPressureTime = T/dt*meanPressureTime;
+
+meanPressureRoom = sqrt( mean( meanPressureTime(:).^2 ) );
+
+disp(meanPressureRoom)
+
+Decibel = 20*log10()
+
 end

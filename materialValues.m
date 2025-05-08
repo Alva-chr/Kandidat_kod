@@ -1,4 +1,4 @@
-function [LA, MU, RH] = materialValues(roomX,roomY,roomLength,roomHeight,m_x,m_y,X,Y,lambda,mu,rho)
+function [LA, MU, RH, inside] = materialValues(roomX,roomY,roomLength,roomHeight,m_x,m_y,X,Y,lambda,mu,rho)
 
 domain = ones(m_x,m_y);
 LA = lambda*domain;

@@ -29,7 +29,7 @@ lambda = rho*C_p^2-2*mu;  %First lamé parameter
 BC = 'ABS';
 
 %If eigenvalue plot is wanted [Y,N]
-eig_answer = 'Y';
+eig_answer = 'N';
 
 %Whats going to be plotted
 % 1: "V_x"
@@ -39,7 +39,7 @@ eig_answer = 'Y';
 % 5: "Sigma_xy"
 % 6:  "Sigma_xx"
 % 7: "P"
-plot_answer = 1;
+plot_answer = 3;
 
 
 
@@ -47,7 +47,7 @@ plot_answer = 1;
 dt = 0.00001;
 
 %Simulation lenght
-T = 10;
+T = 0.1;
 T = T - mod(T, dt);
 
 %Snapshot wanted?

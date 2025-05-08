@@ -41,7 +41,7 @@ Dm_x2 = kron(speye(m_y),Dm_x );
 
 
 %Creating room
-[LA, MU, RH] = materialValues(roomX,roomY,roomLength,roomHeight,m_x,m_y,X,Y,lambda,mu,rho);
+[LA, MU, RH, inside] = materialValues(roomX,roomY,roomLength,roomHeight,m_x,m_y,X,Y,lambda,mu,rho);
 
 %Defining matrixes as blockmatrix for equation 11 in report
 C = [RH, Ze,   Ze, Ze, Ze;
@@ -247,7 +247,7 @@ while t < T
         end
 
         if (T-t)<=1/(f)
-            
+            meanPressureTime = (0.5*e3*(u)+0.5*e5*(u)).^2;
         end
     end
 
@@ -265,4 +265,15 @@ while t < T
 
     u = u_next;
 end
+
+meanPressureTime = T/dt*meanPressureTime;
+
+meanPressureRoom = sqrt( mean( meanPressureTime(:).^2 ) );
+
+%disp(meanPressureRoom)
+
+Decibel = 20*log10(meanPressureRoom/(20*10^6));
+
+%disp(Decibel)
+
 end
