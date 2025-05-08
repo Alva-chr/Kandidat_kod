@@ -1,4 +1,4 @@
-function [] = simulation(frequency, x0, y0, m_x, m_y, W_x, W_y, roomLength, roomHeight, roomX, roomY, mu, lambda,rho, BC, eig_answer, plot_answer, T, dt, snapshot, snapshotName, S1,S2,S3, movie,C_p,C_s)
+function [] = simulation(frequency, x0, y0, m_x, m_y, W_x, W_y, roomLength, roomHeight, roomX, roomY, mu, lambda,rho, BC, eig_answer, plot_answer, T, snapshot, snapshotName, movie,C_p,C_s)
 
 
 %gridspacing for height and length
@@ -43,10 +43,12 @@ Dm_x2 = kron(speye(m_y),Dm_x );
 %Creating room
 [LA, MU, RH, inside] = materialValues(roomX,roomY,roomLength,roomHeight,m_x,m_y,X,Y,lambda,mu,rho);
 
+assert(isdiag(MU));
+
 %Defining matrixes as blockmatrix for equation 11 in report
 C = [RH, Ze,   Ze, Ze, Ze;
      Ze,   RH, Ze, Ze, Ze;
-     Ze,   Ze,  ((LA+2*MU)/(4*MU))/(LA+MU), Ze, ((-LA)/(4*MU))/(LA+MU);
+     Ze,   Ze,  ((LA+2*MU)/((4*MU)))/(LA+MU), Ze, ((-LA)/(4*MU))/(LA+MU);
      Ze,   Ze,   Ze, inv(MU), Ze;
      Ze,   Ze,   ((-LA)/(4*MU))/(LA+MU), Ze, ((LA+2*MU)/(4*MU))/(LA+MU)];
 
@@ -92,6 +94,8 @@ M = C\(D_x+D_y);
 %Projection to hopefully make sure our BC can be handled
 OP = P*M*P;
 
+dt = 2.5/abs(eigs(OP,1));
+
 
 %Setting up point source location
 %Findong the nearest grid‐indicess to (p_x, p_y)
@@ -100,7 +104,7 @@ OP = P*M*P;
 
 %Building a mask with a single one
 PointSource = sparse(m_x,m_y);
-PointSource(iy, ix) = 1;
+PointSource(ix, iy) = 1;
 PointSource = sparse(PointSource(:));
 
 %Setting up vectors for point sources
@@ -109,7 +113,7 @@ f = e1'*PointSource+e2'*sparse(m_x*m_y,1)+e3'*sparse(m_x*m_y,1)+e4'*sparse(m_x*m
 %f = e1'*sparse(m_x*m_y,1)+e2'*sparse(m_x*m_y,1)+e3'*sparse(m_x*m_y,1)+e4'*sparse(m_x*m_y,1)+e5'*sparse(m_x*m_y,1);
 f = H5*f;
 
-plot_parameters = ["V_x","V_y","V","Sigma_xx","Sigma_xy","Sigma_xx"];
+plot_parameters = ["V_x","V_y","V","Sigma_xx","Sigma_xy","Sigma_xx", "P"];
 
 %Plotting eigenvalues 
 if eig_answer == "Y"
@@ -164,14 +168,19 @@ end
 t = 0;
 count = 0;
 
+%Snapchot timings
+S1 = (x0+2)/C_p - mod((x0+2)/C_p, dt);
+S2 = sqrt((roomY - y0)^2+(roomX-x0)^2)/C_p - mod(sqrt((roomY - y0)^2+(roomX-x0)^2)/C_p, dt);
+S3 = T - mod(T, dt);
+
 %IC plot
 figure;
-hSurf = surf(X,Y,plotData);
-
+hSurf = surf(X,Y,plotData, "edgecolor", "None");
+view(2)
 
 %Style changes for graph
 colorbar;
-%clim([0 0.14])  
+clim([-1 1])  
 axis tight;
 xlim([0 W_x])
 ylim([0 W_y])
@@ -247,7 +256,7 @@ while t < T
         end
 
         if (T-t)<=1/(f)
-            meanPressureTime = (0.5*e3*(u)+0.5*e5*(u)).^2;
+            %meanPressureTime = (0.5*e3*(u)+0.5*e5*(u)).^2;
         end
     end
 
@@ -266,13 +275,13 @@ while t < T
     u = u_next;
 end
 
-meanPressureTime = T/dt*meanPressureTime;
+%meanPressureTime = T/dt*meanPressureTime;
 
-meanPressureRoom = sqrt( mean( meanPressureTime(:).^2 ) );
+%meanPressureRoom = sqrt( mean( meanPressureTime(:).^2 ) );
 
 %disp(meanPressureRoom)
 
-Decibel = 20*log10(meanPressureRoom/(20*10^6));
+%Decibel = 20*log10(meanPressureRoom/(20*10^6));
 
 %disp(Decibel)
 

@@ -8,7 +8,7 @@ RH = rho*domain;
 inside = (X >= roomX) & (X <= roomX+roomLength) & (Y >= roomY) & (Y <= roomY+roomHeight);
 
 LA(inside) = 14.632;
-MU(inside) = 0.01;
+MU(inside) = 0.00001;
 RH(inside) = 1.293;
 
 

@@ -1,4 +1,4 @@
-function [] = simulation(frequency, x0, y0, m_x, m_y, W_x, W_y, roomLength, roomHeight, roomX, roomY, mu, lambda,rho, BC, eig_answer, plot_answer, T, dt, snapshot, snapshotName, S1,S2,S3, movie,C_p,C_s)
+function [] = simulation(frequency, x0, y0, m_x, m_y, W_x, W_y, roomLength, roomHeight, roomX, roomY, mu, lambda,rho, BC, eig_answer, plot_answer, T, snapshot, snapshotName, S1,S2,S3, movie,C_p,C_s)
 
 
 %gridspacing for height and length
@@ -41,7 +41,7 @@ Dm_x2 = kron(speye(m_y),Dm_x );
 
 
 %Creating room
-[LA, MU, RH] = materialValues(roomX,roomY,roomLength,roomHeight,m_x,m_y,X,Y,lambda,mu,rho);
+[LA, MU, RH, inside] = materialValues(roomX,roomY,roomLength,roomHeight,m_x,m_y,X,Y,lambda,mu,rho);
 
 %Defining matrixes as blockmatrix for equation 11 in report
 C = [RH, Ze,   Ze, Ze, Ze;
@@ -92,6 +92,8 @@ M = C\(D_x+D_y);
 %Projection to hopefully make sure our BC can be handled
 OP = P*M*P;
 
+dt = 2.5/abs(eigs(OP,1));
+
 
 %Setting up point source location
 %Findong the nearest grid‐indicess to (p_x, p_y)
@@ -100,7 +102,7 @@ OP = P*M*P;
 
 %Building a mask with a single one
 PointSource = sparse(m_x,m_y);
-PointSource(iy, ix) = 1;
+PointSource(ix, iy) = 1;
 PointSource = sparse(PointSource(:));
 
 %Setting up vectors for point sources
@@ -166,9 +168,8 @@ count = 0;
 
 %IC plot
 figure;
-hSurf = surf(X,Y,plotData);
-
-meanPressureTime = sparse(m_x*m_y,m_x*m_y);
+hSurf = surf(X,Y,plotData, "edgecolor", "None");
+view(2)
 
 %Style changes for graph
 colorbar;
@@ -271,8 +272,10 @@ meanPressureTime = T/dt*meanPressureTime;
 
 meanPressureRoom = sqrt( mean( meanPressureTime(:).^2 ) );
 
-disp(meanPressureRoom)
+%disp(meanPressureRoom)
 
-Decibel = 20*log10()
+Decibel = 20*log10(meanPressureRoom/(20*10^6));
+
+%disp(Decibel)
 
 end
