@@ -12,10 +12,10 @@ m_y = 26; %ska bero på våglängden (minst 40)
 %Börja med låg W_y för när vi varierar W_x
 %Defining lenght of domain
 W_x = 120; %Låst, VERIFIERA rum_pos + (30, 60, 90, 120)
-W_y = 40; %Låst, VERIFIERA (10,20,30,40)
+W_y = 10; %Låst, VERIFIERA (10,20,30,40)
 
-roomLength = 3; %Låst
-roomHeight = 5; %Låst
+roomLength = 5; %Låst
+roomHeight = 3; %Låst
 roomX = x0 + 100; % (2,5)
 roomY = ( W_y - roomHeight) - 2; %testa 2 olika (2,4)
 
@@ -44,12 +44,12 @@ eig_answer = 'N';
 plot_answer = 7;
 
 %Simulation lenght, ändra dt, 
-T = 0.1;
+T = 1;
 %T = T - mod(T, dt);
 
 %Snapshot wanted?
-snapshot = "N";
-snapshotName = "input0";
+snapshot = "Y";
+snapshotName = "test";
 
 %movie?
 movie = "Y";

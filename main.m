@@ -1,4 +1,4 @@
-paramFuncs = {@input1};
+paramFuncs = {@testing};
 
 for k = 1:numel(paramFuncs)
     %taking from inputfile

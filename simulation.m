@@ -96,6 +96,8 @@ OP = P*M*P;
 
 dt = 2.5/abs(eigs(OP,1));
 
+dt = T/(ceil(T/dt));
+
 
 %Setting up point source location
 %Findong the nearest grid‐indicess to (p_x, p_y)
@@ -171,7 +173,7 @@ count = 0;
 %Snapchot timings
 S1 = (x0+2)/C_p - mod((x0+2)/C_p, dt);
 S2 = sqrt((roomY - y0)^2+(roomX-x0)^2)/C_p - mod(sqrt((roomY - y0)^2+(roomX-x0)^2)/C_p, dt);
-S3 = T - mod(T, dt);
+S3 = T;
 
 %IC plot
 figure;
@@ -234,15 +236,15 @@ while t < T
             disp("displaying S1")
             set(hSurf, 'ZData', plotData);
             drawnow;
-            filename = snapshotName +"_S1";
+            filename = snapshotName +"_S1.fig";
             fullpath = fullfile(snapshotName, filename);
-
             saveas(gcf, fullpath);
+
         elseif t == S2
             disp("displaying S2")
             set(hSurf, 'ZData', plotData);
             drawnow;
-            filename = snapshotName +"_S2";
+            filename = snapshotName +"_S2.fig";
             fullpath = fullfile(snapshotName, filename);
 
             saveas(gcf, fullpath);
@@ -250,7 +252,7 @@ while t < T
             disp("displaying S3")
             set(hSurf, 'ZData', plotData);
             drawnow;
-            filename = snapshotName +"_S3";
+            filename = snapshotName +"_S3.fig";
             fullpath = fullfile(snapshotName, filename);
             saveas(gcf, fullpath);
         end
