@@ -171,10 +171,9 @@ t = 0;
 count = 0;
 
 %Snapchot timings
-S1 = 0.002 - mod(0.002, dt);
-S2 = 0.02 - mod(0.2, dt);
+S1 = (x0+2)/C_p - mod((x0+2)/C_p, dt);
+S2 = sqrt((roomY - y0)^2+(roomX-x0)^2)/C_p - mod(sqrt((roomY - y0)^2+(roomX-x0)^2)/C_p, dt);
 S3 = T;
-disp(S3)
 
 %IC plot
 figure;
@@ -183,7 +182,7 @@ view(2)
 
 %Style changes for graph
 colorbar;
-clim([-1 1])  
+clim([-15 15])  
 axis tight;
 xlim([0 W_x])
 ylim([0 W_y])
@@ -192,6 +191,8 @@ xlabel('x'); ylabel('y'); zlabel(plot_parameters(plot_answer))
 
 axis tight
 daspect([1 1 1])
+
+meanPressureTime = sparse(m_x,m_y);
 
 if snapshot == "Y"
     if ~exist(snapshotName, 'dir')
@@ -232,7 +233,7 @@ while t < T
     end
 
     if snapshot == "Y"
-        if (t < S1)
+        if (t <= S1+dt/2 && t >= S1-dt/2)
             disp("displaying S1")
             set(hSurf, 'ZData', plotData);
             drawnow;
@@ -240,7 +241,7 @@ while t < T
             fullpath = fullfile(snapshotName, filename);
             saveas(gcf, fullpath);
 
-        elseif t == S2
+        elseif (t <= S2+dt/2 && t >= S2-dt/2)
             disp("displaying S2")
             set(hSurf, 'ZData', plotData);
             drawnow;
@@ -248,7 +249,7 @@ while t < T
             fullpath = fullfile(snapshotName, filename);
 
             saveas(gcf, fullpath);
-        elseif t == S3
+        elseif (t <= S3+dt/2 && t >= S3-dt/2)
             disp(S3)
             set(hSurf, 'ZData', plotData);
             drawnow;
@@ -258,7 +259,7 @@ while t < T
         end
 
         if (T-t)<=1/(f)
-            %meanPressureTime = (0.5*e3*(u)+0.5*e5*(u)).^2;
+            meanPressureTime = meanPressureTime + (0.5*e3*(u)+0.5*e5*(u)).^2;
         end
     end
 

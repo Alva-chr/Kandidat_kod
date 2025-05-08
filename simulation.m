@@ -192,6 +192,8 @@ xlabel('x'); ylabel('y'); zlabel(plot_parameters(plot_answer))
 axis tight
 daspect([1 1 1])
 
+meanPressureTime = sparse(m_x,m_y);
+
 if snapshot == "Y"
     if ~exist(snapshotName, 'dir')
         mkdir(snapshotName);
@@ -257,7 +259,7 @@ while t < T
         end
 
         if (T-t)<=1/(f)
-            %meanPressureTime = (0.5*e3*(u)+0.5*e5*(u)).^2;
+            meanPressureTime = meanPressureTime + reshape((0.5*e3*(u)+0.5*e5*(u)).^2,m_x,m_y);
         end
     end
 
@@ -276,14 +278,16 @@ while t < T
     u = u_next;
 end
 
-%meanPressureTime = T/dt*meanPressureTime;
+meanPressureTime = T/dt*meanPressureTime;
 
-%meanPressureRoom = sqrt( mean( meanPressureTime(:).^2 ) );
+meanPressureTime(~inside) = 0;
 
-%disp(meanPressureRoom)
+meanPressureRoom = sqrt( mean( meanPressureTime(:).^2 ) );
 
-%Decibel = 20*log10(meanPressureRoom/(20*10^6));
+disp(meanPressureRoom)
 
-%disp(Decibel)
+Decibel = 20*log10(meanPressureRoom/(20*10^6));
+
+disp(Decibel)
 
 end

@@ -44,7 +44,7 @@ eig_answer = 'N';
 plot_answer = 7;
 
 %Simulation lenght, ändra dt, 
-T = 0.1;
+T = 0.25;
 %T = T - mod(T, dt);
 
 %Snapshot wanted?
