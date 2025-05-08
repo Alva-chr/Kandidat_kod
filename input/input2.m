@@ -1,8 +1,8 @@
-function [frequency, x0, y0, m_x, m_y,W_x, W_y, roomLength, roomHeight, roomX, roomY, mu, lambda,rho, BC, eig_answer, plot_answer, T, dt, snapshot, snapshotName, S1,S2,S3,movie] = input1()
+function [frequency, x0, y0, m_x, m_y,W_x, W_y, roomLength, roomHeight, roomX, roomY, mu, lambda,rho, BC, eig_answer, plot_answer, T, dt, snapshot, snapshotName, S1,S2,S3] = input1()
 %Input parameters for point source
 frequency = 2;
-x0 = 5;
-y0 = 5;
+x0 = 1;
+y0 = 1;
 
 %Defining number of gridpoints
 m_x = 60;
@@ -48,7 +48,7 @@ T = 10;
 dt = 0.00001;
 
 %Snapshot wanted?
-snapshot = "Y";
+snapshot = "N";
 snapshotName = "input0";
 
 S1 = (x0+2)/C_p - mod((x0+2)/C_p, dt);
@@ -56,6 +56,6 @@ S2 = sqrt((roomY - y0)^2+(roomX-x0)^2)/C_p - mod(sqrt((roomY - y0)^2+(roomX-x0)^
 S3 = T - mod(T, dt);
 
 %movie?
-movie = "Y";
+movie = "N";
 
 end
