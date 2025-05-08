@@ -1,4 +1,4 @@
-function [frequency, x0, y0, m_x, m_y,W_x, W_y, roomLength, roomHeight, roomX, roomY, mu, lambda,rho, BC, eig_answer, plot_answer, T, dt, snapshot, snapshotName, S1,S2,S3,movie] = input1()
+function [frequency, x0, y0, m_x, m_y,W_x, W_y, roomLength, roomHeight, roomX, roomY, mu, lambda,rho, BC, eig_answer, plot_answer, T, dt, snapshot, snapshotName, S1,S2,S3,movie,C_p,C_s] = input1()
 %Input parameters for point source
 frequency = 2;
 x0 = 5;
@@ -26,10 +26,10 @@ mu = rho*C_s^2;      %Second lamé parameter
 lambda = rho*C_p^2-2*mu;  %First lamé parameter
 
 %Which BC,[NBC, ABC, NABC]
-BC = 'NBC';
+BC = 'ABS';
 
 %If eigenvalue plot is wanted [Y,N]
-eig_answer = 'N';
+eig_answer = 'Y';
 
 %Whats going to be plotted
 % 1: "V_x"
@@ -41,11 +41,14 @@ eig_answer = 'N';
 % 7: "P"
 plot_answer = 1;
 
-%Simulation lenght
-T = 10;
+
 
 %timestep
 dt = 0.00001;
+
+%Simulation lenght
+T = 10;
+T = T - mod(T, dt);
 
 %Snapshot wanted?
 snapshot = "Y";

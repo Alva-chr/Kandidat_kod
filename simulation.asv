@@ -1,4 +1,4 @@
-function [] = simulation(frequency, x0, y0, m_x, m_y, W_x, W_y, roomLength, roomHeight, roomX, roomY, mu, lambda,rho, BC, eig_answer, plot_answer, T, dt, snapshot, snapshotName, S1,S2,S3)
+function [] = simulation(frequency, x0, y0, m_x, m_y, W_x, W_y, roomLength, roomHeight, roomX, roomY, mu, lambda,rho, BC, eig_answer, plot_answer, T, dt, snapshot, snapshotName, S1,S2,S3, movie,C_p,C_s)
 
 
 %gridspacing for height and length
@@ -181,6 +181,12 @@ xlabel('x'); ylabel('y'); zlabel(plot_parameters(plot_answer))
 axis tight
 daspect([1 1 1])
 
+if snapshot == "Y"
+    if ~exist(snapshotName, 'dir')
+        mkdir(snapshotName);
+    end
+end
+
 while t < T
     u_next = RK4(u,dt,OP,t,f,frequency);
     t = dt + t;
@@ -213,17 +219,48 @@ while t < T
         plotData = 0.5*(plotDatax + plotDatay);
     end
 
-    
-    if 
+    if snapshot == "Y"
 
+        if t == S1
+            disp("displaying S1")
+            set(hSurf, 'ZData', plotData);
+            drawnow;
+            filename = snapshotName +"_S1";
+            fullpath = fullfile(snapshotName, filename);
 
+            saveas(gcf, fullpath);
+        elseif t == S2
+            disp("displaying S2")
+            set(hSurf, 'ZData', plotData);
+            drawnow;
+            filename = snapshotName +"_S2";
+            fullpath = fullfile(snapshotName, filename);
 
+            saveas(gcf, fullpath);
+        elseif t == S3
+            disp("displaying S3")
+            set(hSurf, 'ZData', plotData);
+            drawnow;
+            filename = snapshotName +"_S3";
+            fullpath = fullfile(snapshotName, filename);
+            saveas(gcf, fullpath);
+        end
 
-    if mod(count,15) == 0
-        set(hSurf, 'ZData', plotData);
-        drawnow;
-        disp(["displaying " count])
+        if (T-t)<=10*dt
+    end|
+
+    if movie == "Y"
+        if mod(count,15) == 0
+            set(hSurf, 'ZData', plotData);
+            drawnow;
+            disp(["displaying " count])
+        end
     end
+
+
+
+    
+
     u = u_next;
 end
 end

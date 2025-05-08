@@ -1,4 +1,4 @@
-function [] = simulation(frequency, x0, y0, m_x, m_y, W_x, W_y, roomLength, roomHeight, roomX, roomY, mu, lambda,rho, BC, eig_answer, plot_answer, T, dt, snapshot, snapshotName, S1,S2,S3, movie)
+function [] = simulation(frequency, x0, y0, m_x, m_y, W_x, W_y, roomLength, roomHeight, roomX, roomY, mu, lambda,rho, BC, eig_answer, plot_answer, T, dt, snapshot, snapshotName, S1,S2,S3, movie,C_p,C_s)
 
 
 %gridspacing for height and length
@@ -221,26 +221,33 @@ while t < T
 
     if snapshot == "Y"
 
-        if T == S1
+        if t == S1
+            disp("displaying S1")
             set(hSurf, 'ZData', plotData);
             drawnow;
             filename = snapshotName +"_S1";
             fullpath = fullfile(snapshotName, filename);
 
             saveas(gcf, fullpath);
-        elseif T == S2
+        elseif t == S2
+            disp("displaying S2")
             set(hSurf, 'ZData', plotData);
             drawnow;
             filename = snapshotName +"_S2";
             fullpath = fullfile(snapshotName, filename);
 
             saveas(gcf, fullpath);
-        elseif T == S3
+        elseif t == S3
+            disp("displaying S3")
             set(hSurf, 'ZData', plotData);
             drawnow;
             filename = snapshotName +"_S3";
             fullpath = fullfile(snapshotName, filename);
             saveas(gcf, fullpath);
+        end
+
+        if (T-t)<=1/(f)
+            
         end
     end
 
