@@ -44,11 +44,11 @@ eig_answer = 'N';
 plot_answer = 7;
 
 %Simulation lenght, ändra dt, 
-T = 1;
+T = 0.1;
 %T = T - mod(T, dt);
 
 %Snapshot wanted?
-snapshot = "Y";
+snapshot = "N";
 snapshotName = "test";
 
 %movie?

@@ -96,7 +96,7 @@ OP = P*M*P;
 
 dt = 2.5/abs(eigs(OP,1));
 
-dt = dt-
+dt = T/(ceil(T/dt));
 
 
 %Setting up point source location
@@ -171,9 +171,10 @@ t = 0;
 count = 0;
 
 %Snapchot timings
-S1 = (x0+2)/C_p - mod((x0+2)/C_p, dt);
-S2 = sqrt((roomY - y0)^2+(roomX-x0)^2)/C_p - mod(sqrt((roomY - y0)^2+(roomX-x0)^2)/C_p, dt);
-S3 = T - mod(T, dt);
+S1 = 0.002 - mod(0.002, dt);
+S2 = 0.02 - mod(0.2, dt);
+S3 = T;
+disp(S3)
 
 %IC plot
 figure;
@@ -231,31 +232,27 @@ while t < T
     end
 
     if snapshot == "Y"
-        disp("funkar")
-        if t == S1
+        if (t < S1)
             disp("displaying S1")
             set(hSurf, 'ZData', plotData);
             drawnow;
             filename = snapshotName +"_S1.fig";
             fullpath = fullfile(snapshotName, filename);
-            disp("funkar1")
             saveas(gcf, fullpath);
 
         elseif t == S2
             disp("displaying S2")
             set(hSurf, 'ZData', plotData);
             drawnow;
-            disp("funkar2")
             filename = snapshotName +"_S2.fig";
             fullpath = fullfile(snapshotName, filename);
 
             saveas(gcf, fullpath);
         elseif t == S3
-            disp("displaying S3")
+            disp(S3)
             set(hSurf, 'ZData', plotData);
             drawnow;
             filename = snapshotName +"_S3.fig";
-            disp("funkar3")
             fullpath = fullfile(snapshotName, filename);
             saveas(gcf, fullpath);
         end
@@ -269,7 +266,7 @@ while t < T
         if mod(count,15) == 0
             set(hSurf, 'ZData', plotData);
             drawnow;
-            disp(["displaying " count])
+            disp(["displaying " count t])
         end
     end
 

@@ -182,7 +182,7 @@ view(2)
 
 %Style changes for graph
 colorbar;
-clim([-1 1])  
+clim([-15 15])  
 axis tight;
 xlim([0 W_x])
 ylim([0 W_y])
@@ -231,8 +231,7 @@ while t < T
     end
 
     if snapshot == "Y"
-
-        if t == S1
+        if (t <= S1+dt/2 && t >= S1-dt/2)
             disp("displaying S1")
             set(hSurf, 'ZData', plotData);
             drawnow;
@@ -240,7 +239,7 @@ while t < T
             fullpath = fullfile(snapshotName, filename);
             saveas(gcf, fullpath);
 
-        elseif t == S2
+        elseif (t <= S2+dt/2 && t >= S2-dt/2)
             disp("displaying S2")
             set(hSurf, 'ZData', plotData);
             drawnow;
@@ -248,8 +247,8 @@ while t < T
             fullpath = fullfile(snapshotName, filename);
 
             saveas(gcf, fullpath);
-        elseif t == S3
-            disp("displaying S3")
+        elseif (t <= S3+dt/2 && t >= S3-dt/2)
+            disp(S3)
             set(hSurf, 'ZData', plotData);
             drawnow;
             filename = snapshotName +"_S3.fig";
@@ -266,7 +265,7 @@ while t < T
         if mod(count,15) == 0
             set(hSurf, 'ZData', plotData);
             drawnow;
-            disp(["displaying " count])
+            disp(["displaying " count t])
         end
     end
 
