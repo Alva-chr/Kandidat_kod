@@ -1,4 +1,4 @@
-function [] = simulation(frequency, x0, y0, m_x, m_y, W_x, W_y, roomLength, roomHeight, roomX, roomY, mu, lambda,rho, BC, eig_answer, plot_answer, T, snapshot, snapshotName, movie,C_p,C_s)
+function [Decibel] = simulation(frequency, x0, y0, m_x, m_y, W_x, W_y, roomLength, roomHeight, roomX, roomY, mu, lambda,rho, BC, eig_answer, plot_answer, T, snapshot, snapshotName, movie,C_p,C_s)
 
 
 %gridspacing for height and length

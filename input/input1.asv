@@ -1,34 +1,32 @@
-function [frequency, x0, y0, m_x, m_y,W_x, W_y, roomLength, roomHeight, roomX, roomY, mu, lambda,rho, BC, eig_answer, plot_answer, T, snapshot, snapshotName,movie,C_p,C_s] = input1()
+function [frequency, x0, y0, m_x, m_y,W_x, W_y, roomLength, roomHeight, roomX, roomY, mu, lambda,rho, BC, eig_answer, plot_answer, T, dt, snapshot, snapshotName, S1,S2,S3,movie,C_p,C_s] = input1()
 %Input parameters for point source
-frequency = 50; %1,5,10,15
-x0 = 5; %Låst
-y0 = 5; %Låst
+frequency = 2;
+x0 = 5;
+y0 = 5;
 
 %Defining number of gridpoints
-m_x = 101; %ska bero på våglängden
-m_y = 26; %ska bero på våglängden (minst 40)
+m_x = 60;
+m_y = 15;
 
-%Börja högt och jobba ner
-%Börja med låg W_y för när vi vari
 %Defining lenght of domain
-W_x = 120; %Låst, VERIFIERA rum_pos + (30, 60, 90, 120)
-W_y = 40; %Låst, VERIFIERA (10,20,30,40)
+W_x = 40;
+W_y = 10;
 
-roomLength = 3; %Låst
-roomHeight = 5; %Låst
-roomX = x0 + 100; % (2,5)
-roomY = ( W_y - roomHeight) - 2; %testa 2 olika
+roomLength = 0.5*W_y;
+roomHeight = 0.5*W_y;
+roomX = 0.8*W_x;
+roomY = 0.25*W_y;
 
-C_p = 1500; %P_wave,  OM VI HINNER (granit)
-C_s = 800; %S-wave, OM VI HINNER (granit om vi hinner)
-rho = 2000; %Density, OM VI HINNER
+C_p = 1500; %P_wave
+C_s = 800; % S-wave
+rho = 2000; %Density
 
 %Material 'constants', will vary by function
 mu = rho*C_s^2;      %Second lamé parameter
 lambda = rho*C_p^2-2*mu;  %First lamé parameter
 
 %Which BC,[NBC, ABC, NABC]
-BC = 'NABC';
+BC = 'ABS';
 
 %If eigenvalue plot is wanted [Y,N]
 eig_answer = 'N';
@@ -41,15 +39,26 @@ eig_answer = 'N';
 % 5: "Sigma_xy"
 % 6:  "Sigma_xx"
 % 7: "P"
-plot_answer = 7;
+plot_answer = 3;
 
-%Simulation lenght, ändra dt, 
+
+
+%timestep
+dt = 0.00001;
+
+%Simulation lenght
 T = 0.1;
-%T = T - mod(T, dt);
+T = T - mod(T, dt);
 
+
+%%%
 %Snapshot wanted?
-snapshot = "N";
+snapshot = "Y";
 snapshotName = "input0";
+
+S1 = (x0+2)/C_p - mod((x0+2)/C_p, dt);
+S2 = sqrt((roomY - y0)^2+(roomX-x0)^2)/C_p - mod(sqrt((roomY - y0)^2+(roomX-x0)^2)/C_p, dt);
+S3 = T - mod(T, dt);
 
 %movie?
 movie = "Y";

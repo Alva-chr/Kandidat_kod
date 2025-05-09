@@ -1,4 +1,4 @@
-function [frequency, x0, y0, m_x, m_y,W_x, W_y, roomLength, roomHeight, roomX, roomY, mu, lambda,rho, BC, eig_answer, plot_answer, T, dt, snapshot, snapshotName, S1,S2,S3,movie,C_p,C_s] = input1()
+function [frequency, x0, y0, m_x, m_y,W_x, W_y, roomLength, roomHeight, roomX, roomY, mu, lambda,rho, BC, eig_answer, plot_answer, T, dt, snapshot, snapshotName, S1,S2,S3,movie,C_p,C_s, decibel_txt] = input1()
 %Input parameters for point source
 frequency = 2;
 x0 = 5;
@@ -50,6 +50,8 @@ dt = 0.00001;
 T = 0.1;
 T = T - mod(T, dt);
 
+
+%%%SAVING DATA STUFF%%%
 %Snapshot wanted?
 snapshot = "Y";
 snapshotName = "input0";
@@ -60,5 +62,8 @@ S3 = T - mod(T, dt);
 
 %movie?
 movie = "Y";
+
+%Saving decibel to txt file?
+decibel_txt = "N";
 
 end
