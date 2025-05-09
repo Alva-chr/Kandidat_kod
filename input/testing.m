@@ -4,7 +4,7 @@ frequency = 50; %1,5,10,15
 x0 = 5; %Låst
 y0 = 5; %Låst
 
-%Defining number of gridpoints
+%Defining number of gridpoints, TESTA SIST MED OLIKA
 m_x = 101; %ska bero på våglängden
 m_y = 26; %ska bero på våglängden (minst 40)
 
