@@ -1,4 +1,4 @@
-function [frequency, x0, y0, m_x, m_y,W_x, W_y, roomLength, roomHeight, roomX, roomY, mu, lambda,rho, BC, eig_answer, plot_answer, T, snapshot, snapshotName,movie,C_p,C_s,decibel_txt, save_movie] = testing()
+function [frequency, x0, y0, m_x, m_y,W_x, W_y, roomLength, roomHeight, roomX, roomY, mu, lambda,rho, BC, eig_answer, plot_answer, T, snapshot, snapshotName,movie,C_p,C_s] = input1()
 %Input parameters for point source
 frequency = 50; %1,5,10,15
 x0 = 5; %Låst
@@ -44,18 +44,15 @@ eig_answer = 'N';
 plot_answer = 7;
 
 %Simulation lenght, ändra dt, 
-T = 0.1;
+T = 0.25;
 %T = T - mod(T, dt);
 
 %Snapshot wanted?
-snapshot = "Y";
+snapshot = "N";
 snapshotName = "test";
 
 %movie?
 movie = "Y";
-save_movie = "N";
-
-%save decibel data to txt?
-decibel_txt = "N";
+save_movie = "Y"
 
 end

@@ -1,4 +1,4 @@
-function [Decibel] = simulation(frequency, x0, y0, m_x, m_y, W_x, W_y, roomLength, roomHeight, roomX, roomY, mu, lambda,rho, BC, eig_answer, plot_answer, T, snapshot, snapshotName, movie,C_p,C_s)
+function [] = simulation(frequency, x0, y0, m_x, m_y, W_x, W_y, roomLength, roomHeight, roomX, roomY, mu, lambda,rho, BC, eig_answer, plot_answer, T, snapshot, snapshotName, movie,C_p,C_s,decibel_txt, save_movie)
 
 
 %gridspacing for height and length
@@ -134,36 +134,7 @@ end
 
 
 %Calculating IC data
-if plot_answer == 1
-    plotData = reshape(e1*u, m_x, m_y);
-
-elseif plot_answer == 2
-    plotData = reshape(e2*u, m_x, m_y);
-
-elseif plot_answer == 3
-    plotDatay = reshape(e2*u, m_x, m_y);
-    plotDatax = reshape(e1*u, m_x, m_y);
-    plotData = sqrt(plotDatax.^2 + plotDatay.^2);
-
-elseif plot_answer == 4
-    plotData = reshape(e3*u, m_x, m_y);
-
-elseif plot_answer == 5
-    plotData = reshape(e4*u, m_x, m_y);
-
-elseif plot_answer == 6
-    plotData = reshape(e5*u, m_x, m_y);
-elseif plot_answer == 7
-    plotDatax = reshape(e3*u, m_x, m_y);
-    plotDatay = reshape(e5*u, m_x, m_y);
-    plotData = 0.5*(plotDatax + plotDatay);
-
-else
-    plot_answer = 3;
-    plotDatay = reshape(e2*u, m_x, m_y);
-    plotDatax = reshape(e1*u, m_x, m_y);
-    plotData = sqrt(plotDatax.^2 + plotDatay.^2);
-end
+plotData = plot_u(plot_answer,u,m_x,m_y);
 
 
 %Starting values
@@ -177,6 +148,7 @@ S3 = T;
 
 %IC plot
 figure;
+set(gcf, 'Units','pixels', 'Position', [0 0 1920 1080]);
 hSurf = surf(X,Y,plotData, "edgecolor", "None");
 view(2)
 
@@ -194,10 +166,20 @@ daspect([1 1 1])
 
 meanPressureTime = sparse(m_x,m_y);
 
-if snapshot == "Y"
+if snapshot == "Y" || save_movie == "Y"
     if ~exist(snapshotName, 'dir')
         mkdir(snapshotName);
     end
+end
+
+fid = fopen("decibel_saved.txt", "a");
+
+if save_movie == "Y"
+    filename = snapshotName +"_movie.mp4";
+    fullpath = fullfile(snapshotName, filename);
+    v = VideoWriter(fullpath, 'MPEG-4');
+    v.Quality = 100;
+    open(v)
 end
 
 while t < T
@@ -206,65 +188,47 @@ while t < T
     count = count +1;
 
     %Plotting what we want
-    if plot_answer == 1
-        plotData = reshape(e1*u, m_x, m_y);
-    
-    elseif plot_answer == 2
-        plotData = reshape(e2*u, m_x, m_y);
-    
-    elseif plot_answer == 3
-        plotDatay = reshape(e2*u, m_x, m_y);
-        plotDatax = reshape(e1*u, m_x, m_y);
-        plotData = sqrt(plotDatax.^2 + plotDatay.^2);
-    
-    elseif plot_answer == 4
-        plotData = reshape(e3*u, m_x, m_y);
-    
-    elseif plot_answer == 5
-        plotData = reshape(e4*u, m_x, m_y);
-    
-    elseif plot_answer == 6
-        plotData = reshape(e5*u, m_x, m_y);
-
-    elseif plot_answer == 7
-        plotDatax = reshape(e3*u, m_x, m_y);
-        plotDatay = reshape(e5*u, m_x, m_y);
-        plotData = 0.5*(plotDatax + plotDatay);
-    end
+    plotData = plot_u(plot_answer,u,m_x,m_y);
 
     if snapshot == "Y"
         if (t <= S1+dt/2 && t >= S1-dt/2)
-            disp("displaying S1")
             set(hSurf, 'ZData', plotData);
             drawnow;
-            filename = snapshotName +"_S1.fig";
-            fullpath = fullfile(snapshotName, filename);
-            saveas(gcf, fullpath);
+
+            %Takes snapshot
+            takeSnapshot("S1", snapshotName)          
 
         elseif (t <= S2+dt/2 && t >= S2-dt/2)
             disp("displaying S2")
             set(hSurf, 'ZData', plotData);
             drawnow;
-            filename = snapshotName +"_S2.fig";
-            fullpath = fullfile(snapshotName, filename);
 
-            saveas(gcf, fullpath);
+            takeSnapshot("S2", snapshotName)  
+
         elseif (t <= S3+dt/2 && t >= S3-dt/2)
             disp(S3)
             set(hSurf, 'ZData', plotData);
             drawnow;
-            filename = snapshotName +"_S3.fig";
-            fullpath = fullfile(snapshotName, filename);
-            saveas(gcf, fullpath);
+
+            takeSnapshot("S3", snapshotName)  
         end
 
         if (T-t)<=1/(f)
             meanPressureTime = meanPressureTime + reshape((0.5*e3*(u)+0.5*e5*(u)).^2,m_x,m_y);
         end
+
     end
 
-    if movie == "Y"
-        if mod(count,15) == 0
+
+
+    if mod(count, 15) == 0
+        if save_movie == "Y"
+            set(hSurf, 'ZData', plotData);
+            frame = getframe(gcf);
+            writeVideo(v, frame)
+        end
+
+        if movie == "Y"
             set(hSurf, 'ZData', plotData);
             drawnow;
             disp(["displaying " count t])
@@ -273,21 +237,31 @@ while t < T
 
 
 
+
+
+
     
 
     u = u_next;
 end
 
-meanPressureTime = T/dt*meanPressureTime;
+% meanPressureTime = T/dt*meanPressureTime;
+% 
+% meanPressureTime(~inside) = 0;
+% 
+% meanPressureRoom = sqrt( mean( meanPressureTime(:).^2 ) );
+% 
+% disp(meanPressureRoom)
+% 
+% Decibel = 20*log10(meanPressureRoom/(20*10^6));
+% 
+% disp(Decibel)
 
-meanPressureTime(~inside) = 0;
 
-meanPressureRoom = sqrt( mean( meanPressureTime(:).^2 ) );
+    if decibel_txt == "Y" 
+        fprintf(fid,'%s\t%f\n', snapshotName, decibel);
+    end
 
-disp(meanPressureRoom)
-
-Decibel = 20*log10(meanPressureRoom/(20*10^6));
-
-disp(Decibel)
-
+    fclose(fid);
 end
+

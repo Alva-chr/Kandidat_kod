@@ -1,4 +1,4 @@
-function [] = simulation(frequency, x0, y0, m_x, m_y, W_x, W_y, roomLength, roomHeight, roomX, roomY, mu, lambda,rho, BC, eig_answer, plot_answer, T, snapshot, snapshotName, movie,C_p,C_s)
+function [] = simulation(frequency, x0, y0, m_x, m_y, W_x, W_y, roomLength, roomHeight, roomX, roomY, mu, lambda,rho, BC, eig_answer, plot_answer, T, snapshot, snapshotName, movie,C_p,C_s,decibel_txt, save_movie)
 
 
 %gridspacing for height and length
@@ -194,10 +194,19 @@ daspect([1 1 1])
 
 meanPressureTime = sparse(m_x,m_y);
 
-if snapshot == "Y"
+if snapshot == "Y" || save_movie == "Y"
     if ~exist(snapshotName, 'dir')
         mkdir(snapshotName);
     end
+end
+
+fid = fopen("decibel_saved.txt", "a");
+
+if save_movie == "Y"
+    filename = snapshotName +"_movie";
+    fullpath = fullfile(snapshotName, filename);
+    v = VideoWriter(fullpath);
+    open(v)
 end
 
 while t < T
@@ -240,6 +249,7 @@ while t < T
             filename = snapshotName +"_S1.fig";
             fullpath = fullfile(snapshotName, filename);
             saveas(gcf, fullpath);
+           
 
         elseif (t <= S2+dt/2 && t >= S2-dt/2)
             disp("displaying S2")
@@ -247,8 +257,9 @@ while t < T
             drawnow;
             filename = snapshotName +"_S2.fig";
             fullpath = fullfile(snapshotName, filename);
-
             saveas(gcf, fullpath);
+            
+
         elseif (t <= S3+dt/2 && t >= S3-dt/2)
             disp(S3)
             set(hSurf, 'ZData', plotData);
@@ -256,16 +267,26 @@ while t < T
             filename = snapshotName +"_S3.fig";
             fullpath = fullfile(snapshotName, filename);
             saveas(gcf, fullpath);
+            
         end
 
         if (T-t)<=1/(f)
-            meanPressureTime = meanPressureTime + (0.5*e3*(u)+0.5*e5*(u)).^2;
+            meanPressureTime = meanPressureTime + reshape((0.5*e3*(u)+0.5*e5*(u)).^2,m_x,m_y);
+        end
+
+    end
+
+    if save_movie == "Y"
+        if mod(count, 15) == 0
+                        set(hSurf, 'ZData', plotData);
+        frame = getframe(gcf);
+        writeVideo(v, frame)
         end
     end
 
     if movie == "Y"
         if mod(count,15) == 0
-            set(hSurf, 'ZData', plotData);
+
             drawnow;
             disp(["displaying " count t])
         end
@@ -278,14 +299,23 @@ while t < T
     u = u_next;
 end
 
-%meanPressureTime = T/dt*meanPressureTime;
+% meanPressureTime = T/dt*meanPressureTime;
+% 
+% meanPressureTime(~inside) = 0;
+% 
+% meanPressureRoom = sqrt( mean( meanPressureTime(:).^2 ) );
+% 
+% disp(meanPressureRoom)
+% 
+% Decibel = 20*log10(meanPressureRoom/(20*10^6));
+% 
+% disp(Decibel)
 
-%meanPressureRoom = sqrt( mean( meanPressureTime(:).^2 ) );
 
-%disp(meanPressureRoom)
+    if decibel_txt == "Y" 
+        fprintf(fid,'%s\t%f\n', snapshotName, decibel);
+    end
 
-%Decibel = 20*log10(meanPressureRoom/(20*10^6));
-
-%disp(Decibel)
-
+    fclose(fid);
 end
+
