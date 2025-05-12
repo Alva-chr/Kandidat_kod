@@ -1,1 +1,18 @@
-Simulation name, decibel
+
+verifyWx1	-40.113795
+verifyWx2	-40.714502
+verifyWx3	-40.438325
+verifyWx4	-40.453573
+verifyWx5	-34.310118
+
+verifyWy1	-44.988675
+verifyWy2	-51.993456
+verifyWy3	-28.770308
+verifyWy4	-40.438325
+verifyWy5	-33.034468
+
+verifyWy6	-37.150816
+verifyWy10	-38.422458
+verifyWy7	-21.783825
+verifyWy8	-21.507287
+verifyWy9	-31.249445

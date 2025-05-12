@@ -102,7 +102,7 @@ dt = T/(ceil(T/dt));
 %Setting up point source location
 %Findong the nearest grid‐indicess to (p_x, p_y)
 [~, ix] = min(abs(x - x0));
-[~, iy] = min(abs(y - y0));
+[~, iy] = min(abs(y - (W_y-y0)));
 
 %Building a mask with a single one
 PointSource = sparse(m_x,m_y);
@@ -199,24 +199,24 @@ while t < T
             takeSnapshot("S1", snapshotName)          
 
         elseif (t <= S2+dt/2 && t >= S2-dt/2)
-            disp("displaying S2")
+            %disp("displaying S2")
             set(hSurf, 'ZData', plotData);
             drawnow;
 
             takeSnapshot("S2", snapshotName)  
 
         elseif (t <= S3+dt/2 && t >= S3-dt/2)
-            disp(S3)
+            %disp(S3)
             set(hSurf, 'ZData', plotData);
             drawnow;
 
             takeSnapshot("S3", snapshotName)  
         end
+    
 
-        if (T-t)<=1/(f)
-            meanPressureTime = meanPressureTime + reshape((0.5*e3*(u)+0.5*e5*(u)).^2,m_x,m_y);
-        end
-
+    end
+    if (T-t)<=1/(f)
+        meanPressureTime = meanPressureTime + reshape((0.5*e3*(u)+0.5*e5*(u)).^2,m_x,m_y);
     end
 
 
@@ -231,7 +231,7 @@ while t < T
         if movie == "Y"
             set(hSurf, 'ZData', plotData);
             drawnow;
-            disp(["displaying " count t])
+            %disp(["displaying " count t])
         end
     end
 
@@ -245,23 +245,23 @@ while t < T
     u = u_next;
 end
 
-% meanPressureTime = T/dt*meanPressureTime;
-% 
-% meanPressureTime(~inside) = 0;
-% 
-% meanPressureRoom = sqrt( mean( meanPressureTime(:).^2 ) );
-% 
-% disp(meanPressureRoom)
-% 
-% Decibel = 20*log10(meanPressureRoom/(20*10^6));
-% 
-% disp(Decibel)
+meanPressureTime = T/dt*meanPressureTime;
+
+meanPressureTime(~inside) = 0;
+
+meanPressureRoom = sqrt( sum( meanPressureTime(:).^2 )/(roomHeight*roomLength) );
+
+disp(meanPressureRoom)
+
+decibel = 20*log10(meanPressureRoom/(20*10^-6));
+
+disp(decibel)
 
 
-    if decibel_txt == "Y" 
-        fprintf(fid,'%s\t%f\n', snapshotName, decibel);
-    end
+if decibel_txt == "Y" 
+    fprintf(fid,'%s\t%f\n', snapshotName, full(decibel));
+end
 
-    fclose(fid);
+fclose(fid);
 end
 

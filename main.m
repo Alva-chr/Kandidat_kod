@@ -1,4 +1,4 @@
-paramFuncs = {@testing};
+paramFuncs = {@verifyWy11,@verifyWy12,@verifyWy13,@verifyWy14,@verifyWy15};
 
 
 
