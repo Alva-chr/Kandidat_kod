@@ -1,13 +1,15 @@
 function [] = simulation(frequency, x0, y0, m_x, m_y, W_x, W_y, roomLength, roomHeight, roomX, roomY, mu, lambda,rho, BC, eig_answer, plot_answer, T, snapshot, snapshotName, movie,C_p,C_s,decibel_txt, save_movie)
 
 
-if W_y/m_y < 2
+if W_y/m_y > 2
     m_y = 2*W_y;
 end
 
-if W_x/m_x < 2
+if W_x/m_x > 2
     m_x = 2*W_x;
 end
+
+T = sqrt(W_y^2+W_x^2)/C_s+5/frequency;
 
 %gridspacing for height and length
 hx = W_x/(m_x-1);

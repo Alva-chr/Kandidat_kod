@@ -1,9 +1,8 @@
-function [frequency, x0, y0, m_x, m_y,W_x, W_y, roomLength, roomHeight, roomX, roomY, mu, lambda,rho, BC, eig_answer, plot_answer, T, snapshot, snapshotName,movie,C_p,C_s,decibel_txt, save_movie] = testing()
+function [frequency, x0, y0, m_x, m_y,W_x, W_y, roomLength, roomHeight, roomX, roomY, mu, lambda,rho, BC, eig_answer, plot_answer, T, snapshot, snapshotName,movie,C_p,C_s,decibel_txt, save_movie] = verifyWy16_2()
 %Input parameters for point source
-frequency = 10; %1,5,10,15
+frequency = 50; %1,5,10,15
 x0 = 5; %Låst
 y0 = 5; %Låst
-
 
 
 roomLength = 5; %Låst
@@ -14,21 +13,22 @@ roomX = x0 + 100; % (2,5)
 %Börja högt och jobba ner
 %Börja med låg W_y för när vi varierar W_x
 %Defining lenght of domain
-W_x = roomX + 30; %Låst, VERIFIERA rum_pos + (30, 60, 90, 120)
-W_y = 10; %Låst, VERIFIERA (10,20,30,40)
+W_x = roomX + 60; %Låst, VERIFIERA rum_pos + (30, 60, 90, 120)
+W_y = 70; %Låst, VERIFIERA (10,20,30,40)
 
-
-roomY = ( W_y - roomHeight) - 2; %testa 2 olika (2,12)
-
+roomY = ( W_y - roomHeight) - 2; %testa 2 olika (2,4)
 
 %Defining number of gridpoints, TESTA SIST MED OLIKA
 m_x = (10*W_x*frequency)/332; %ska bero på våglängde
 m_y = (10*W_y*frequency)/332; %ska bero på våglängden (minst 40)
-
+if W_y/m_y < 2
+    m_y = 2*W_y;
+end
 
 
 m_x = ceil(m_x);
 m_y = ceil(m_y);
+
 
 C_p = 1500; %P_wave,  OM VI HINNER (granit)
 C_s = 800; %S-wave, OM VI HINNER (granit om vi hinner)
@@ -55,15 +55,15 @@ eig_answer = 'N';
 plot_answer = 7;
 
 %Simulation lenght, ändra dt, 
-T = 0.001;
+T = 1;
 %T = T - mod(T, dt);
 
 %Snapshot wanted?
-snapshot = "Y";
-snapshotName = "testing_2025_05_13";
+snapshot = "N";
+snapshotName = "verifyWy16";
 
 %movie?
-movie = "N";
+movie = "Y";
 save_movie = "N";
 
 %save decibel data to txt?
