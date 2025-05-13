@@ -259,7 +259,7 @@ while t < T
     u = u_next;
 end
 
-meanPressureTime = T/(5*dt)*meanPressureTime;
+meanPressureTime = 5*f*dt*meanPressureTime;
 
 meanPressureTime(~inside) = 0;
 
