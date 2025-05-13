@@ -1,4 +1,4 @@
-paramFuncs = {@simx_1,@simx_2,@simx_4,@simx_6,@simx_8,@simx_10,@simx_12,@simx_14,@simx_16,@simx_18,@simx_20,@simx_22,@simx_24,@simx_26,@simx_28,@simx_30, @simx_eig_ABC, @simx_eig_NABC, @simx_eig_NBC};
+paramFuncs = {@simx_1,@simx_2,};
 
 
 

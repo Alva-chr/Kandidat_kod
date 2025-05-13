@@ -136,6 +136,11 @@ if eig_answer == "Y"
     xlabel('\Re(h\cdotB)');ylabel('\Im(h\cdotB)');
     ax = gca;          % current axes
     ax.FontSize = 10;
+    
+    set(gcf, 'Units','pixels', 'Position', [0 0 1920 1080]);
+    takeSnapshot("eig", snapshotName)
+
+
 else
     disp("No eigenplot wanted")
 end
