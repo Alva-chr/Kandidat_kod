@@ -1,6 +1,14 @@
 function [] = simulation(frequency, x0, y0, m_x, m_y, W_x, W_y, roomLength, roomHeight, roomX, roomY, mu, lambda,rho, BC, eig_answer, plot_answer, T, snapshot, snapshotName, movie,C_p,C_s,decibel_txt, save_movie)
 
 
+if W_y/m_y < 2
+    m_y = 2*W_y;
+end
+
+if W_x/m_x < 2
+    m_x = 2*W_x;
+end
+
 %gridspacing for height and length
 hx = W_x/(m_x-1);
 hy = W_y/(m_y-1);
@@ -141,6 +149,12 @@ plotData = plot_u(plot_answer,u,m_x,m_y);
 t = 0;
 count = 0;
 
+
+
+m_y = ceil(m_y);
+m_x = ceil(m_x);
+
+
 %Snapchot timings
 S1 = (x0+2)/C_p - mod((x0+2)/C_p, dt);
 S2 = sqrt((roomY - y0)^2+(roomX-x0)^2)/C_p - mod(sqrt((roomY - y0)^2+(roomX-x0)^2)/C_p, dt);
@@ -215,7 +229,7 @@ while t < T
     
 
     end
-    if (T-t)<=1/(f)
+    if (T-t)<=5/(f)
         meanPressureTime = meanPressureTime + reshape((0.5*e3*(u)+0.5*e5*(u)).^2,m_x,m_y);
     end
 
@@ -245,7 +259,7 @@ while t < T
     u = u_next;
 end
 
-meanPressureTime = T/dt*meanPressureTime;
+meanPressureTime = T/(5*dt)*meanPressureTime;
 
 meanPressureTime(~inside) = 0;
 

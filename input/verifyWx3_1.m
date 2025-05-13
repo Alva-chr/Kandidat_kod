@@ -18,9 +18,8 @@ W_y = 40; %Låst, VERIFIERA (10,20,30,40)
 
 roomY = ( W_y - roomHeight) - 2; %testa 2 olika (2,4)
 
-%20 POINTS PER GRID
 %Defining number of gridpoints, TESTA SIST MED OLIKA
-m_x = (20*W_x*frequency)/332; %ska bero på våglängde
+m_x = (10*W_x*frequency)/332; %ska bero på våglängde
 m_y = (10*W_y*frequency)/332; %ska bero på våglängden (minst 40)
 if m_y < 40
     m_y = 40;

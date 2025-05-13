@@ -1,4 +1,4 @@
-paramFuncs = {@verifyWy11,@verifyWy12,@verifyWy13,@verifyWy14,@verifyWy15};
+paramFuncs = {@verifyWx1_30,@verifyWx1_60,@verifyWx1_90,@verifyWx1_120,@verifyWx1_150};
 
 
 
