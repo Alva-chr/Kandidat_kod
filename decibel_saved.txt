@@ -45,5 +45,9 @@ verifyWy21	-27.919754
 verifyWx7	-61.595134
 verifyWx7	-61.518012
 
-%Allt samma
-verifyWx1_30	-66.012571
+%Allt samma,    decibel fel     decibelkorrekt
+verifyWx1_30	-183.118284     -211.0773
+verifyWx1_60	-179.653686     -207.613
+verifyWx1_90	-178.854510     -206.8135
+verifyWx1_120	-179.079787     -207.0387
+verifyWx1_150	-178.835826     -206.7945

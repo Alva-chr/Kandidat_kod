@@ -27,5 +27,27 @@ verifyWy7	-21.783825
 verifyWy8	-21.507287
 verifyWy9	-31.249445
 
+verifyWy11	-37.150816
+verifyWy12	-35.725031
+verifyWy13	-25.470378
+verifyWy14	-29.113468
+verifyWy15	-25.354716
+
+verifyWy16	-25.472686
+verifyWy17	-27.754483
+verifyWy18	-27.568394
+verifyWy19	-28.791042
+verifyWy20	-27.425914
+verifyWy21	-27.919754
 
 
+
+verifyWx7	-61.595134
+verifyWx7	-61.518012
+
+%Allt samma,    decibel fel     decibelkorrekt
+verifyWx1_30	-183.118284     -211.0773
+verifyWx1_60	-179.653686     -207.613
+verifyWx1_90	-178.854510     -206.8135
+verifyWx1_120	-179.079787     -207.0387
+verifyWx1_150	-178.835826     -206.7945

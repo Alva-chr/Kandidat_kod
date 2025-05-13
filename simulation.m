@@ -248,18 +248,12 @@ while t < T
             %disp(["displaying " count t])
         end
     end
-
-
-
-
-
-
     
 
     u = u_next;
 end
 
-meanPressureTime = 5*f*dt*meanPressureTime;
+meanPressureTime = 5*frequency*dt*meanPressureTime;
 
 meanPressureTime(~inside) = 0;
 
