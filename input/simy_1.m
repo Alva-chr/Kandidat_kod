@@ -58,7 +58,7 @@ snapshot = "N";
 snapshotName = "simy_1";
 
 %movie?
-movie = "N";
+movie = "Y";
 save_movie = "N";
 
 %save decibel data to txt?

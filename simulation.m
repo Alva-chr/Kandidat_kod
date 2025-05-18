@@ -9,13 +9,16 @@ if W_x/m_x > 2
     m_x = 2*W_x;
 end
 
-T = sqrt(W_y^2+W_x^2)/C_s+5/frequency;
+
+
+m_x = ceil(m_x);
+m_y = ceil(m_y);
+
+T = sqrt(W_y^2+W_x^2)/C_s+2/frequency;
 
 %gridspacing for height and length
 hx = W_x/(m_x-1);
 hy = W_y/(m_y-1);
-
-
 
 
 Id = speye(m_x*m_y);
@@ -48,6 +51,7 @@ Dp_y2 = kron(Dp_y,speye(m_x) );
 Dm_y2 = kron(Dm_y, speye(m_x));
 Dp_x2 = kron(speye(m_y), Dp_x);
 Dm_x2 = kron(speye(m_y),Dm_x );
+
 
 
 %Creating room
@@ -95,6 +99,8 @@ L = [L_w; L_e; L_s; L_n];
 
 P = I - (HII\L')* ((L* (HII\ L'))\ L);
 
+
+
 %Renaming A and B to be easier read
 D_x = A; 
 D_y = B; 
@@ -105,6 +111,7 @@ M = C\(D_x+D_y);
 OP = P*M*P;
 
 dt = 2.5/abs(eigs(OP,1));
+
 
 dt = T/(ceil(T/dt));
 
@@ -120,10 +127,13 @@ PointSource(ix, iy) = 1;
 PointSource = sparse(PointSource(:));
 
 %Setting up vectors for point sources
-f = e1'*PointSource+e2'*sparse(m_x*m_y,1)+e3'*sparse(m_x*m_y,1)+e4'*sparse(m_x*m_y,1)+e5'*sparse(m_x*m_y,1);
-%f = e1'*sparse(m_x*m_y,1)+e2'*M+e3'*sparse(m_x*m_y,1)+e4'*sparse(m_x*m_y,1)+e5'*sparse(m_x*m_y,1);
+%f = e1'*PointSource+e2'*sparse(m_x*m_y,1)+e3'*sparse(m_x*m_y,1)+e4'*sparse(m_x*m_y,1)+e5'*sparse(m_x*m_y,1);
+f = e1'*sparse(m_x*m_y,1)+e2'*PointSource+e3'*sparse(m_x*m_y,1)+e4'*sparse(m_x*m_y,1)+e5'*sparse(m_x*m_y,1);
 %f = e1'*sparse(m_x*m_y,1)+e2'*sparse(m_x*m_y,1)+e3'*sparse(m_x*m_y,1)+e4'*sparse(m_x*m_y,1)+e5'*sparse(m_x*m_y,1);
-f = H5*f;
+f = H5\f;
+
+disp(f)
+
 
 plot_parameters = ["V_x","V_y","V","Sigma_xx","Sigma_xy","Sigma_xx", "P"];
 
@@ -236,7 +246,7 @@ while t < T
     
 
     end
-    if (T-t)<=5/(f)
+    if (T-t)<=2/(f)
         meanPressureTime = meanPressureTime + reshape((0.5*e3*(u)+0.5*e5*(u)).^2,m_x,m_y);
     end
 
@@ -260,7 +270,7 @@ while t < T
     u = u_next;
 end
 
-meanPressureTime = 5*frequency*dt*meanPressureTime;
+meanPressureTime = frequency*dt*meanPressureTime/2;
 
 meanPressureTime(~inside) = 0;
 
@@ -272,6 +282,7 @@ decibel = 20*log10(meanPressureRoom/(20*10^-6));
 
 disp(decibel)
 
+disp(datetime)
 
 if decibel_txt == "Y" 
     fprintf(fid,'%s\t%f\n', snapshotName, full(decibel));
