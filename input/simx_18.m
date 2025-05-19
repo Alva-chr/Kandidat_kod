@@ -22,8 +22,8 @@ roomY = ( W_y - roomHeight) - 2; %testa 2 olika (2,12)
 
 
 %Defining number of gridpoints, TESTA SIST MED OLIKA
-m_x = (10*W_x*frequency)/332; %ska bero på våglängde
-m_y = (10*W_y*frequency)/332; %ska bero på våglängden (minst 40)
+m_x = (5*W_x*frequency)/332; %ska bero på våglängde
+m_y = (5*W_y*frequency)/332; %ska bero på våglängden (minst 40)
 
 
 C_p = 1500; %P_wave,  OM VI HINNER (granit)

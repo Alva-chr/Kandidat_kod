@@ -1,6 +1,6 @@
 function [frequency, x0, y0, m_x, m_y,W_x, W_y, roomLength, roomHeight, roomX, roomY, mu, lambda,rho, BC, eig_answer, plot_answer, T, snapshot, snapshotName,movie,C_p,C_s,decibel_txt, save_movie] = testing()
 %Input parameters for point source
-frequency = 20; %1,5,10,15
+frequency = 14; %1,5,10,15
 x0 = 5; %Låst
 y0 = 5; %Låst
 
@@ -22,14 +22,12 @@ roomY = ( W_y - roomHeight) - 2; %testa 2 olika (2,12)
 
 
 %Defining number of gridpoints, TESTA SIST MED OLIKA
-m_x = (5*W_x*frequency)/332; %ska bero på våglängde
-m_y = (5*W_y*frequency)/332; %ska bero på våglängden (minst 40)
+m_x = (10*W_x*frequency)/332; %ska bero på våglängde
+m_y = (10*W_y*frequency)/332; %ska bero på våglängden (minst 40)
 
-
-C_p = 1500; %P_wave,  OM VI HINNER (granit)
-C_s = 800; %S-wave, OM VI HINNER (granit om vi hinner)
-rho = 2000; %Density, OM VI HINNER
-
+C_p = 3600; %P_wave,  OM VI HINNER (granit)
+C_s = 200; %S-wave, OM VI HINNER (granit om vi hinner)
+rho = 2400; %Density, OM VI HINNER
 %Material 'constants', will vary by function
 mu = rho*C_s^2;      %Second lamé parameter
 lambda = rho*C_p^2-2*mu;  %First lamé parameter
@@ -56,7 +54,7 @@ T = 0.3;
 
 %Snapshot wanted?
 snapshot = "N";
-snapshotName = "simx_20";
+snapshotName = "Cx14";
 
 %movie?
 movie = "N";

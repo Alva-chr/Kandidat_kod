@@ -274,6 +274,7 @@ meanPressureTime = frequency*dt*meanPressureTime/2;
 
 meanPressureTime(~inside) = 0;
 
+%kolla en punkt i rummet
 meanPressureRoom = sqrt( sum( meanPressureTime(:).^2 )/(roomHeight*roomLength) );
 
 disp(meanPressureRoom)
